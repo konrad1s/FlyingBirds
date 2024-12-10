@@ -5,6 +5,7 @@
 #include <thread>
 #include <future>
 #include <string>
+#include "Player.h"
 
 class GameManager
 {
@@ -38,6 +39,6 @@ private:
     std::thread promptThread;
     bool promptThreadRunning = false;
 
-    std::vector<std::unique_ptr<sf::TcpSocket>> clients;
+    std::unordered_map<uint32_t, std::unique_ptr<Player>> clients;
     State state;
 };

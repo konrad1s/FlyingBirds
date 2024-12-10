@@ -34,9 +34,9 @@ void Server::run()
 
 void Server::acceptNewClients()
 {
-    auto newClient = std::make_unique<sf::TcpSocket>();
+    auto newClient = std::make_unique<ClientConnection>();
 
-    if (listener.accept(*newClient))
+    if (listener.accept(newClient.get()->getSocket()))
     {
         clients[nextClientId] = std::move(newClient);
         game->onClientConnected(nextClientId);

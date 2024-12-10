@@ -67,12 +67,12 @@ GameManager::State GameManager::getState()
 
 void GameManager::onClientConnected(uint32_t clientId)
 {
-
+    clients[clientId] = std::make_unique<Player>(clientId);
 }
 
 void GameManager::onClientDisconnected(uint32_t clientId)
 {
-
+    clients[clientId].reset();
 }
 
 void GameManager::handleClientMessage(uint32_t clientId)

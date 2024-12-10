@@ -5,7 +5,7 @@
 class ClientConnection
 {
 public:
-    ClientConnection();
+    ClientConnection() {}
 
     sf::TcpSocket& getSocket()
     {

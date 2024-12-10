@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "GameManager.h"
 #include "ConfigServer.h"
+#include "ClientConnection.h"
 
 class Server
 {
@@ -20,6 +21,6 @@ private:
     const ConfigServer &config;
     std::unique_ptr<GameManager> game;
     sf::TcpListener listener;
-    std::unordered_map<ClientId, std::unique_ptr<sf::TcpSocket>> clients;
+    std::unordered_map<ClientId, std::unique_ptr<ClientConnection>> clients;
     ClientId nextClientId;
 };
