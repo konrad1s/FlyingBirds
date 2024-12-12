@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 
-class TransformComponent : public Component
+class Transform : public Component
 {
 public:
     float x = 0.0f;

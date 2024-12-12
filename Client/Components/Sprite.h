@@ -3,10 +3,10 @@
 #include "Component.h"
 #include <SFML/Graphics.hpp>
 
-class SpriteComponent : public Component
+class Sprite : public Component
 {
 public:
-    SpriteComponent() {}
+    Sprite() {}
 
 public:
     sf::Sprite sprite;

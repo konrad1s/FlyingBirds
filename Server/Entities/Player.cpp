@@ -15,8 +15,9 @@ Components::Position Player::getPosition() const
     return position;
 }
 
-void setPosition(const Components::Position& pos)
+void Player::setPosition(const Components::Position& pos)
 {
+    position = pos;
 }
 
 Components::Velocity Player::getVelocity() const

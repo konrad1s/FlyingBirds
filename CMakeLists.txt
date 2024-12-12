@@ -1,10 +1,17 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.10)
+project(RpgGame LANGUAGES CXX)
 
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project ("RpgGame")
+# find_package(Protobuf REQUIRED)
+find_package(SFML 2.5 COMPONENTS system window graphics network REQUIRED)
 
-add_subdirectory ("RpgGame")
+# Provide these to subdirectories
+include_directories(${Protobuf_INCLUDE_DIRS})
+
+# Add subdirectories
+# add_subdirectory(proto)
+add_subdirectory(Shared)
+add_subdirectory(Server)
+add_subdirectory(Client)

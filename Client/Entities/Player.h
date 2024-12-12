@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Entity.h"
-#include "HealthComponent.h"
-#include "SpriteComponent.h"
-#include "TransformComponent.h"
+#include "Health.h"
+#include "Sprite.h"
+#include "Transform.h"
 
 class Player : public Entity
 {
@@ -15,7 +15,7 @@ public:
 private:
     const int speed = 100;
 
-    HealthComponent health;
-    SpriteComponent sprite;
-    TransformComponent transform;
+    Health health;
+    Sprite sprite;
+    Transform transform;
 };
