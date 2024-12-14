@@ -15,7 +15,7 @@ public:
 private:
     const int speed = 100;
 
-    Health health;
-    Sprite sprite;
-    Transform transform;
+    Components::Health health;
+    Components::Sprite sprite;
+    Components::Transform transform;
 };
