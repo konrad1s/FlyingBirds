@@ -18,7 +18,7 @@ add_executable(server
 target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(server PUBLIC
     ServerEntities ServerComponents
-    # shared
+    Shared
     proto_generated
     sfml-system sfml-network sfml-graphics sfml-window
     ${Protobuf_LIBRARIES}

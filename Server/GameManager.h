@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClientConnection.h"
+#include "NetworkHandler.h"
 #include <unordered_map>
 #include <thread>
 #include <future>

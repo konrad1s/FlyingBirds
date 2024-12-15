@@ -34,7 +34,7 @@ void Server::run()
 
 void Server::acceptNewClients()
 {
-    auto newClient = std::make_unique<ClientConnection>();
+    auto newClient = std::make_unique<NetworkHandler>();
 
     if (listener.accept(newClient.get()->getSocket()))
     {

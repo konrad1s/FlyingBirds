@@ -1,5 +1,15 @@
-add_library(Shared INTERFACE)
+add_library(Shared STATIC
+    NetworkHandler.cpp 
+)
 
-target_include_directories(Shared INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Shared PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-target_compile_features(Shared INTERFACE cxx_std_20)
+target_link_libraries(Shared PUBLIC
+    sfml-system sfml-network
+    proto_generated
+    ${Protobuf_LIBRARIES}
+)
+
+target_compile_features(Shared PUBLIC cxx_std_20)
