@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "Logger.h"
 #include <iostream>
 #include <future>
 #include <thread>
@@ -6,6 +7,7 @@
 Server::Server(const ConfigServer &_config) : config(_config), nextClientId(0)
 {
     game = std::make_unique<GameManager>();
+    Logger::info("Server initialized", config.port);
 }
 
 void Server::run()
@@ -14,9 +16,10 @@ void Server::run()
 
     if (listener.listen(config.port) != sf::Socket::Done)
     {
-        std::cerr << "Failed to bind listener to port " << config.port << std::endl;
+        Logger::error("Failed to bind listener to port {}", config.port);
         return;
     }
+    Logger::info("Server is listening on port {}", config.port);
     listener.setBlocking(false);
 
     while (true)
@@ -36,7 +39,7 @@ void Server::acceptNewClients()
 {
     auto newClient = std::make_unique<NetworkHandler>();
 
-    if (listener.accept(newClient.get()->getSocket()))
+    if (listener.accept(newClient.get()->getSocket()) == sf::Socket::Done)
     {
         clients[nextClientId] = std::move(newClient);
         game->onClientConnected(nextClientId);

@@ -1,6 +1,5 @@
-#pragma once
-
 #include "GameManager.h"
+#include "Logger.h"
 #include <iostream>
 
 GameManager::GameManager() : state(State::waitingForClients)
@@ -21,12 +20,17 @@ void GameManager::checkPrompt()
         try
         {
             std::string input = promptFuture.get();
+
+            Logger::info("Received prompt input: {}", input);
             if (input == "START")
+            {
                 state = State::starting;
+                Logger::info("GameManager starting.");
+            }
         }
         catch (const std::exception& e)
         {
-            std::cerr << "Error handling prompt input: " << e.what() << std::endl;
+            Logger::error("Error handling prompt input: {}", e.what());
         }
     }
 }
@@ -50,6 +54,7 @@ void GameManager::update(float deltaTime)
         promptThread.join();
         promptThreadRunning = false;
         state = State::running;
+        Logger::info("GameManager state changed to running.");
         break;
     case State::running:
         /* TODO: Handle runinning state*/
@@ -68,11 +73,13 @@ GameManager::State GameManager::getState()
 void GameManager::onClientConnected(uint32_t clientId)
 {
     clients[clientId] = std::make_unique<Player>(clientId);
+    Logger::info("Player {} connected to the game.", clientId);
 }
 
 void GameManager::onClientDisconnected(uint32_t clientId)
 {
     clients[clientId].reset();
+    Logger::info("Player {} disconnected from the game.", clientId);
 }
 
 void GameManager::handleClientMessage(uint32_t clientId)
@@ -96,6 +103,6 @@ void GameManager::handlePrompt()
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Error in handlePrompt: " << e.what() << std::endl;
+        Logger::error("Error in handlePrompt: {}", e.what());
     }
 }

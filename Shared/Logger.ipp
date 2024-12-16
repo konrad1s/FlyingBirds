@@ -61,7 +61,7 @@ constexpr const char *Logger::levelToString(const Level level)
     }
 }
 
-std::string Logger::getCurrentTime()
+inline std::string Logger::getCurrentTime()
 {
     using namespace std::chrono;
 

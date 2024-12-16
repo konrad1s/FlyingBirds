@@ -1,4 +1,5 @@
 #include "GameWorld.h"
+#include "Logger.h"
 #include <random>
 #include <chrono>
 
@@ -16,11 +17,22 @@ void GameWorld::addPlayer(uint32_t id)
     player->setPosition(Components::Position(dist(rng), dist(rng)));
 
     players[id] = std::move(player);
+    Logger::info("Added player {} to the game at position ({}, {}).",
+                 id,
+                 players[id]->getPosition().position.x,
+                 players[id]->getPosition().position.y);
 }
 
 void GameWorld::removePlayer(uint32_t id)
 {
-    players.erase(id);
+    if (players.erase(id))
+    {
+        Logger::info("Removed player {} from the game.", id);
+    }
+    else
+    {
+        Logger::warning("Attempted to remove non-existent player {} from the game.", id);
+    }
 }
 
 std::unordered_map<uint32_t, std::unique_ptr<Player>> &GameWorld::getPlayers()

@@ -41,7 +41,7 @@ private:
     static inline std::mutex logMutex;
 
     static constexpr const char *levelToString(const Level level);
-    static std::string getCurrentTime();
+    static inline std::string getCurrentTime();
 };
 
 #include "Logger.ipp"
