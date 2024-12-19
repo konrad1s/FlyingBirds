@@ -3,12 +3,13 @@
 #include <thread>
 #include <mutex>
 #include "Player.h"
+#include "GameWorld.h"
 
-class Game
+class GameManager
 {
 public:
-    Game();
-    ~Game();
+    GameManager();
+    ~GameManager();
     void run();
 
 private:
@@ -23,4 +24,5 @@ private:
     std::thread renderThread;
     std::thread updateThread;
     std::mutex entityMutex;
+    std::unique_ptr<GameWorld> world;
 };

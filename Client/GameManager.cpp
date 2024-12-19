@@ -1,11 +1,12 @@
-#include "Game.h"
+#include "GameManager.h"
 #include "ResourceManager.h"
+#include "Client.h"
 
-Game::Game() : window(sf::VideoMode(800, 600), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(800, 600), "Game"), isRunning(false)
 {
 }
 
-Game::~Game()
+GameManager::~GameManager()
 {
     isRunning = false;
 
@@ -15,12 +16,15 @@ Game::~Game()
         updateThread.join();
 }
 
-void Game::run()
+void GameManager::run()
 {
     isRunning = true;
     window.setActive(false);
-    renderThread = std::thread(&Game::renderLoop, this);
-    updateThread = std::thread(&Game::updateLoop, this);
+    renderThread = std::thread(&GameManager::renderLoop, this);
+    updateThread = std::thread(&GameManager::updateLoop, this);
+
+    static Client client = Client(sf::IpAddress::LocalHost, 5000);
+    client.start();
 
     while (window.isOpen())
     {
@@ -28,7 +32,7 @@ void Game::run()
     }
 }
 
-void Game::handleEvents()
+void GameManager::handleEvents()
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -41,7 +45,7 @@ void Game::handleEvents()
     }
 }
 
-void Game::renderLoop()
+void GameManager::renderLoop()
 {
     window.setActive(true);
 
@@ -60,7 +64,7 @@ void Game::renderLoop()
     }
 }
 
-void Game::updateLoop()
+void GameManager::updateLoop()
 {
     static float deltaTime;
     sf::Clock clock;

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CLIENT_SOURCES
     main.cpp
     Client.cpp
-    Game.cpp
+    GameManager.cpp
     GameWorld.cpp
     ResourceManager.cpp
 )
