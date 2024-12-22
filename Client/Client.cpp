@@ -1,5 +1,6 @@
 #include "Client.h"
 #include "Logger.h"
+#include "Events.h"
 
 Client::Client(const sf::IpAddress &serverIp, unsigned short serverPort, EventBus &eventBus) : serverIp(serverIp), serverPort(serverPort), eventBus(eventBus)
 {
@@ -51,7 +52,34 @@ void Client::networkLoop()
         {
             if (envelope.category() == network::Envelope::SERVER_TO_CLIENT)
             {
-                eventBus.publish<network::ServerToClient>(envelope.s2c());
+                auto msgType = envelope.s2c().type();
+
+                switch (msgType)
+                {
+                case network::ServerToClient::STATE_UPDATE:
+                {
+                    Events::StateUpdateEvent event{envelope.s2c()};
+                    eventBus.publish<Events::StateUpdateEvent>(event);
+                }
+                break;
+                case network::ServerToClient::WELCOME:
+                {
+                    Events::WelcomeEvent event{envelope.s2c()};
+                    eventBus.publish<Events::WelcomeEvent>(event);
+                }
+                break;
+                case network::ServerToClient::GOODBYE:
+                {
+                    Events::GoodbyeEvent event{envelope.s2c()};
+                    eventBus.publish<Events::GoodbyeEvent>(event);
+                }
+                break;
+                default:
+                {
+                    Logger::warning("Received unknown ServerToClient message");
+                }
+                break;
+                }
             }
         }
         else
