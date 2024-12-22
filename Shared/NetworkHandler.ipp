@@ -20,7 +20,7 @@ int NetworkHandler::sendMessage(const MessageType &msg)
 
 template <typename MessageType,
           std::enable_if_t<std::is_base_of_v<google::protobuf::Message, MessageType>, bool>>
-int NetworkHandler::receiveMessage(const MessageType &msg)
+int NetworkHandler::receiveMessage(MessageType &msg)
 {
     msgSize_t size = 0;
     std::size_t received = 0;

@@ -17,7 +17,7 @@ public:
 
     template <typename MessageType,
               std::enable_if_t<std::is_base_of_v<google::protobuf::Message, MessageType>, bool> = true>
-    int receiveMessage(const MessageType &msg);
+    int receiveMessage(MessageType &msg);
 
     sf::TcpSocket &getSocket();
 
