@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
-#include "Server.h"
+#include "GameManager.h"
 
 int main()
 {
     const ConfigServer config;
-    Server server(config);
+    GameManager gameManager(config);
 
-    server.run();
+    gameManager.run();
 
     return 0;
 }

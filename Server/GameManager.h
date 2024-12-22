@@ -6,6 +6,10 @@
 #include <future>
 #include <string>
 #include "Player.h"
+#include "Server.h"
+#include "ConfigServer.h"
+#include "EventBus.h"
+#include "network.pb.h"
 
 class GameManager
 {
@@ -18,27 +22,31 @@ public:
         finished
     };
 
-    GameManager();
+    GameManager(const ConfigServer& config);
     ~GameManager();
 
+    void run();
     void update(float deltaTime);
-    void checkPrompt();
-
-    State getState();
-
-    void onClientConnected(uint32_t clientId);
-    void onClientDisconnected(uint32_t clientId);
-    void handleClientMessage(uint32_t clientId);
-    void serializeGameData();
+    State getState() const { return state; }
 
 private:
     void handlePrompt();
+    void checkPrompt();
+
+    void onClientConnected(uint32_t clientId);
+    void onClientDisconnected(uint32_t clientId);
+    void onClientMessage(uint32_t clientId, const network::ClientToServer &msg);
+    void sendWelcomeToClient(uint32_t clientId);
+
+    State state = State::waitingForClients;
 
     std::promise<std::string> promptInput;
     std::future<std::string> promptFuture;
     std::thread promptThread;
-    bool promptThreadRunning = false;
+    std::atomic<bool> promptThreadRunning{false};
 
+    std::mutex promptMutex;
+    EventBus eventBus;
     std::unordered_map<uint32_t, std::unique_ptr<Player>> clients;
-    State state;
+    std::unique_ptr<Server> server;
 };

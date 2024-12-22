@@ -1,53 +1,73 @@
 #include "Server.h"
 #include "Logger.h"
-#include <iostream>
-#include <future>
-#include <thread>
+#include "Events.h"
 
-Server::Server(const ConfigServer &_config) : config(_config), nextClientId(0)
+Server::Server(const ConfigServer &config, EventBus &eb)
+    : config(config), eventBus(eb)
 {
-    game = std::make_unique<GameManager>();
-    Logger::info("Server initialized", config.port);
 }
 
-void Server::run()
+Server::~Server()
 {
-    sf::Clock clock;
+    stop();
+}
 
+bool Server::start()
+{
     if (listener.listen(config.port) != sf::Socket::Done)
     {
         Logger::error("Failed to bind listener to port {}", config.port);
-        return;
+        return false;
     }
-    Logger::info("Server is listening on port {}", config.port);
+    Logger::info("Server listening on port {}", config.port);
+
     listener.setBlocking(false);
 
-    while (true)
-    {
-        float deltaTime = clock.restart().asSeconds();
+    return true;
+}
 
-        if (GameManager::State::waitingForClients == game->getState())
-        {
-            acceptNewClients();
-        }
-
-        update(deltaTime);
-    }
+void Server::stop()
+{
+    listener.close();
+    Logger::info("Server stopped.");
 }
 
 void Server::acceptNewClients()
 {
     auto newClient = std::make_unique<NetworkHandler>();
-
-    if (listener.accept(newClient.get()->getSocket()) == sf::Socket::Done)
+    if (listener.accept(newClient->getSocket()) == sf::Socket::Done)
     {
-        clients[nextClientId] = std::move(newClient);
-        game->onClientConnected(nextClientId);
-        nextClientId++;
+        newClient->getSocket().setBlocking(false);
+
+        ClientId assignedId = nextClientId++;
+        clients[assignedId] = std::move(newClient);
+
+        Events::ClientConnectedEvent event{assignedId};
+        eventBus.publish(event);
+
+        Logger::info("New client connected with ID: {}", assignedId);
     }
 }
 
-void Server::update(float deltaTime)
+void Server::update()
 {
-    game->update(deltaTime);
+    for (auto& [clientId, handlerPtr] : clients)
+    {
+        receiveFromClient(clientId);
+    }
+}
+
+void Server::receiveFromClient(ClientId clientId)
+{
+    sf::Packet packet;
+    sf::Socket::Status status = clients[clientId]->getSocket().receive(packet);
+
+    if (status == sf::Socket::Done)
+    {
+        
+    }
+    else if (status == sf::Socket::Disconnected)
+    {
+        
+    }
 }

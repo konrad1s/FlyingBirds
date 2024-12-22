@@ -1,4 +1,3 @@
-
 template <typename T>
 void EventBus::publish(const T &event)
 {

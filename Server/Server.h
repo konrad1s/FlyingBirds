@@ -1,26 +1,41 @@
 #pragma once
 
 #include <unordered_map>
-#include "GameManager.h"
 #include "ConfigServer.h"
 #include "NetworkHandler.h"
+#include "EventBus.h"
+#include "Logger.h"
 
 class Server
 {
 public:
-    Server(const ConfigServer &_config);
+    using ClientId = uint32_t;
 
-    void run();
+    Server(const ConfigServer &config, EventBus &eb);
+    ~Server();
 
-private:
-    typedef uint32_t ClientId;
+    bool start();
+    void stop();
+
+    template <typename MsgType>
+    void sendToClient(ClientId clientId, const MsgType &msg);
+
+    template <typename MsgType>
+    void broadcast(const MsgType &msg);
 
     void acceptNewClients();
-    void update(float deltaTime);
+    void update();
+
+private:
+    void receiveFromClient(ClientId clientId);
 
     const ConfigServer &config;
-    std::unique_ptr<GameManager> game;
+    EventBus &eventBus;
+
     sf::TcpListener listener;
+    ClientId nextClientId = 0;
+
     std::unordered_map<ClientId, std::unique_ptr<NetworkHandler>> clients;
-    ClientId nextClientId;
 };
+
+#include "Server.ipp"
