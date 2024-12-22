@@ -1,11 +1,17 @@
-#include "Game.h"
+#include "GameManager.h"
 #include "ResourceManager.h"
+#include "Logger.h"
 
-Game::Game() : window(sf::VideoMode(800, 600), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(800, 600), "Game"), isRunning(false)
 {
+    eventBus.subscribe<Events::WelcomeEvent>(
+        [this](const Events::WelcomeEvent &evt)
+        {
+            this->onServerWelcome(evt);
+        });
 }
 
-Game::~Game()
+GameManager::~GameManager()
 {
     isRunning = false;
 
@@ -13,14 +19,19 @@ Game::~Game()
         renderThread.join();
     if (updateThread.joinable())
         updateThread.join();
+    if (client)
+        client->stop();
 }
 
-void Game::run()
+void GameManager::run()
 {
     isRunning = true;
     window.setActive(false);
-    renderThread = std::thread(&Game::renderLoop, this);
-    updateThread = std::thread(&Game::updateLoop, this);
+    renderThread = std::thread(&GameManager::renderLoop, this);
+    updateThread = std::thread(&GameManager::updateLoop, this);
+
+    client = std::make_unique<Client>(sf::IpAddress::LocalHost, 5000, eventBus);
+    client->start();
 
     while (window.isOpen())
     {
@@ -28,7 +39,7 @@ void Game::run()
     }
 }
 
-void Game::handleEvents()
+void GameManager::handleEvents()
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -41,7 +52,7 @@ void Game::handleEvents()
     }
 }
 
-void Game::renderLoop()
+void GameManager::renderLoop()
 {
     window.setActive(true);
 
@@ -60,7 +71,7 @@ void Game::renderLoop()
     }
 }
 
-void Game::updateLoop()
+void GameManager::updateLoop()
 {
     static float deltaTime;
     sf::Clock clock;
@@ -76,4 +87,9 @@ void Game::updateLoop()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+}
+
+void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
+{
+    Logger::info("Server welcome received");
 }

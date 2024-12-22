@@ -4,7 +4,7 @@
 Player::Player()
 {
     auto &resourceManager = ResourceManager::getInstance();
-    resourceManager.load<sf::Texture>("player", "../Resources/assets/textures/player.png");
+    resourceManager.load<sf::Texture>("player", "../../../assets/textures/player.png");
 
     transform.x = 100.0f;
     transform.y = 100.0f;
