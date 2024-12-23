@@ -6,8 +6,8 @@ namespace Components
     class Size : public Component
     {
     public:
-        Size(int s = 100) : size(s) {}
+        Size(float s = 100) : size(s) {}
 
-        int size;
+        float size;
     };
 }

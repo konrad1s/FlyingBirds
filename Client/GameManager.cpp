@@ -9,6 +9,12 @@ GameManager::GameManager() : window(sf::VideoMode(800, 600), "Game"), isRunning(
         {
             this->onServerWelcome(evt);
         });
+
+    eventBus.subscribe<Events::StateUpdateEvent>(
+        [this](const Events::StateUpdateEvent &evt)
+        {
+            this->onServerDataUpdate(evt);
+        });
 }
 
 GameManager::~GameManager()
@@ -92,4 +98,14 @@ void GameManager::updateLoop()
 void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     Logger::info("Server welcome received");
+}
+
+void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
+{
+    Logger::info("Data update received");
+
+    for (auto &p : evt.message.players())
+    {
+        Logger::info("Player {}, position {}", p.id(), p.position().x());
+    }
 }

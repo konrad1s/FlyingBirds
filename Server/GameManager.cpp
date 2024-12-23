@@ -43,8 +43,8 @@ void GameManager::run()
             server->acceptNewClients();
         }
 
-        update(deltaTime);
         server->update();
+        update(deltaTime);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
@@ -62,12 +62,14 @@ void GameManager::update(float deltaTime)
             promptThread.join();
         promptThreadRunning = false;
 
+        gameWorld.spawnFood();
+
         state = State::running;
         Logger::info("GameManager state changed to running.");
     }
     else if (state == State::running)
     {
-        /* TODO: Handle running state */
+        broadcastGameState();
     }
     else if (state == State::finished)
     {
@@ -112,7 +114,10 @@ void GameManager::onClientConnected(uint32_t clientId)
 {
     auto playerPtr = std::make_unique<Player>(clientId);
     clients[clientId] = std::move(playerPtr);
+    gameWorld.addPlayer(clientId);
     Logger::info("Player {} connected to the game.", clientId);
+
+    sendWelcomeToClient(clientId);
 }
 
 void GameManager::onClientDisconnected(uint32_t clientId)
@@ -139,6 +144,36 @@ void GameManager::sendWelcomeToClient(uint32_t clientId)
     server->sendToClient<network::Envelope>(clientId, envelope);
 }
 
+void GameManager::broadcastGameState()
+{
+    network::Envelope envelope;
+    envelope.set_category(network::Envelope::SERVER_TO_CLIENT);
+
+    network::ServerToClient* s2c = envelope.mutable_s2c();
+    s2c->set_type(network::ServerToClient::STATE_UPDATE);
+
+    for (auto& [id, playerPtr] : gameWorld.getPlayers())
+    {
+        network::ServerToClient::Entity *entityPlayer = s2c->add_players();
+    
+        entityPlayer->set_id(id);
+        entityPlayer->mutable_position()->set_x(playerPtr->getPosition().position.x);
+        entityPlayer->mutable_position()->set_y(playerPtr->getPosition().position.y);
+        entityPlayer->set_size(playerPtr->getSize().size);
+    }
+
+    for (auto &food : gameWorld.getFood())
+    {
+        network::ServerToClient::Entity *entityFood = s2c->add_foods();
+        static uint32_t foodIdCounter = 0;
+        entityFood->set_id(foodIdCounter++);
+        entityFood->mutable_position()->set_x(food.getPosition().position.x);
+        entityFood->mutable_position()->set_y(food.getPosition().position.y);
+        entityFood->set_size(food.getRadius());
+    }
+
+    server->broadcast<network::Envelope>(envelope);
+}
 void GameManager::handlePrompt()
 {
     try

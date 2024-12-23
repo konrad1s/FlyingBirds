@@ -10,6 +10,7 @@
 #include "ConfigServer.h"
 #include "EventBus.h"
 #include "network.pb.h"
+#include "GameWorld.h"
 
 class GameManager
 {
@@ -37,6 +38,7 @@ private:
     void onClientDisconnected(uint32_t clientId);
     void onClientMessage(uint32_t clientId, const network::ClientToServer &msg);
     void sendWelcomeToClient(uint32_t clientId);
+    void broadcastGameState();
 
     State state = State::waitingForClients;
 
@@ -49,4 +51,6 @@ private:
     EventBus eventBus;
     std::unordered_map<uint32_t, std::unique_ptr<Player>> clients;
     std::unique_ptr<Server> server;
+
+    GameWorld gameWorld;
 };

@@ -21,6 +21,7 @@ private:
     void handleEvents();
 
     void onServerWelcome(const Events::WelcomeEvent &evt);
+    void onServerDataUpdate(const Events::StateUpdateEvent &evt);
 
 private:
     bool isRunning;
