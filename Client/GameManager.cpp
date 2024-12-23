@@ -2,7 +2,7 @@
 #include "ResourceManager.h"
 #include "Logger.h"
 
-GameManager::GameManager() : window(sf::VideoMode(800, 600), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(800, 800), "Game"), isRunning(false)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)
@@ -36,6 +36,8 @@ void GameManager::run()
     renderThread = std::thread(&GameManager::renderLoop, this);
     updateThread = std::thread(&GameManager::updateLoop, this);
 
+    world = std::make_unique<GameWorld>();
+
     client = std::make_unique<Client>(sf::IpAddress::LocalHost, 5000, eventBus);
     client->start();
 
@@ -68,12 +70,15 @@ void GameManager::renderLoop()
 
         {
             std::lock_guard<std::mutex> lock(entityMutex);
-            player.render(window);
+            if (world)
+            {
+                world->render(window);
+            }
         }
 
         window.display();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(60));
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
 
@@ -88,10 +93,13 @@ void GameManager::updateLoop()
 
         {
             std::lock_guard<std::mutex> lock(entityMutex);
-            player.update(deltaTime);
+            if (world)
+            {
+                world->update(deltaTime);
+            }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 }
 
@@ -104,8 +112,11 @@ void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
 {
     Logger::info("Data update received");
 
-    for (auto &p : evt.message.players())
     {
-        Logger::info("Player {}, position {}", p.id(), p.position().x());
+        std::lock_guard<std::mutex> lock(entityMutex);
+        if (world)
+        {
+            world->updateFromServer(evt.message);
+        }
     }
 }

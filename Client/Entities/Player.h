@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include "Entity.h"
 #include "Health.h"
 #include "Sprite.h"
@@ -11,6 +12,9 @@ public:
     Player();
     void update(float deltaTime) override;
     void render(sf::RenderWindow &window) override;
+
+    void setPosition(float x, float y);
+    void setTexture(sf::Texture* texture);
 
 private:
     const int speed = 100;

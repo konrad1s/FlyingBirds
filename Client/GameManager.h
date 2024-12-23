@@ -25,7 +25,6 @@ private:
 
 private:
     bool isRunning;
-    Player player;
     EventBus eventBus;
     sf::RenderWindow window;
     std::thread renderThread;
