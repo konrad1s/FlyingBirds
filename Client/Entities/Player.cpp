@@ -21,6 +21,11 @@ void Player::setPosition(float x, float y)
     transform.y = y;
 }
 
+void Player::setHealth(int hp)
+{
+    health = hp;
+}
+
 void Player::setTexture(sf::Texture* texture)
 {
     sprite.sprite.setTexture(*texture, true);

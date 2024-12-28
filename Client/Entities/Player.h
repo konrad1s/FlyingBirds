@@ -14,6 +14,7 @@ public:
     void render(sf::RenderWindow &window) override;
 
     void setPosition(float x, float y);
+    void setHealth(int hp);
     void setTexture(sf::Texture* texture);
 
 private:

@@ -174,6 +174,7 @@ void GameManager::broadcastGameState()
 
     server->broadcast<network::Envelope>(envelope);
 }
+
 void GameManager::handlePrompt()
 {
     try
