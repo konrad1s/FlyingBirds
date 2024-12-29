@@ -1,34 +1,36 @@
 #pragma once
 
 #include <cstdint>
-#include "Size.h"
-#include "Speed.h"
 #include "Position.h"
+#include "Speed.h"
+#include "Size.h"
 
 class Player
 {
 public:
-    Player(uint32_t _id);
+    explicit Player(uint32_t id);
 
     uint32_t getId() const;
 
-    Components::Position getPosition() const;
-    void setPosition(const Components::Position& pos);
-
-    Components::Speed getSpeed() const;
-    void setSpeed(const Components::Speed& vel);
-
     float getAngle() const;
-    void setAngle(const float angle);
+    void  setAngle(float angle);
 
-    Components::Size getSize() const;
+    float getX() const;
+    float getY() const;
+    void  setPosition(float x, float y);
 
-    void grow(int amount);
+    float getSpeedValue() const;
+    void  setSpeedValue(float val);
+
+    float getSizeValue() const;
+    void  grow(float amount);
+
     void update(float deltaTime);
 
 private:
     uint32_t id;
     float angle;
+
     Components::Position position;
     Components::Speed speed;
     Components::Size size;

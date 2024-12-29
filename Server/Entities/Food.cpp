@@ -3,12 +3,16 @@
 Food::Food(const Components::Position& pos, float _radius)
     : position(pos), radius(_radius)
 {
-
 }
 
-const Components::Position& Food::getPosition() const
+float Food::getX() const
 {
-    return position;
+    return position.coords.x;
+}
+
+float Food::getY() const
+{
+    return position.coords.y;
 }
 
 float Food::getRadius() const

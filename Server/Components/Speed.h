@@ -6,8 +6,8 @@ namespace Components
     class Speed : public Component
     {
     public:
-        Speed(float speed = 0.f) : speed(speed) {}
+        float value;
 
-        float speed;
+        Speed(float speed = 0.f) : value(speed) {}
     };
 }

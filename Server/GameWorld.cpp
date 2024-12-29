@@ -13,13 +13,13 @@ void GameWorld::addPlayer(uint32_t id)
     auto player = std::make_unique<Player>(id);
 
     std::uniform_real_distribution<float> dist(0.f, 800.f);
-    player->setPosition(Components::Position(dist(rng), dist(rng)));
+    player->setPosition(dist(rng), dist(rng));
 
     players[id] = std::move(player);
     Logger::info("Added player {} to the game at position ({}, {}).",
                  id,
-                 players[id]->getPosition().position.x,
-                 players[id]->getPosition().position.y);
+                 players[id]->getX(),
+                 players[id]->getY());
 }
 
 void GameWorld::removePlayer(uint32_t id)

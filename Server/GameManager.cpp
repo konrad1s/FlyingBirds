@@ -166,9 +166,9 @@ void GameManager::broadcastGameState()
         network::ServerToClient::Entity *entityPlayer = s2c->add_players();
     
         entityPlayer->set_id(id);
-        entityPlayer->mutable_position()->set_x(playerPtr->getPosition().position.x);
-        entityPlayer->mutable_position()->set_y(playerPtr->getPosition().position.y);
-        entityPlayer->set_size(playerPtr->getSize().size);
+        entityPlayer->mutable_position()->set_x(playerPtr->getX());
+        entityPlayer->mutable_position()->set_y(playerPtr->getY());
+        entityPlayer->set_size(playerPtr->getSizeValue());
     }
 
     for (auto &food : gameWorld.getFood())
@@ -176,8 +176,8 @@ void GameManager::broadcastGameState()
         network::ServerToClient::Entity *entityFood = s2c->add_foods();
         static uint32_t foodIdCounter = 0;
         entityFood->set_id(foodIdCounter++);
-        entityFood->mutable_position()->set_x(food.getPosition().position.x);
-        entityFood->mutable_position()->set_y(food.getPosition().position.y);
+        entityFood->mutable_position()->set_x(food.getX());
+        entityFood->mutable_position()->set_y(food.getY());
         entityFood->set_size(food.getRadius());
     }
 

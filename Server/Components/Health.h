@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Component.h"
 
 namespace Components
@@ -6,8 +7,8 @@ namespace Components
     class Health : public Component
     {
     public:
-        Health(int h = 100) : health(h) {}
+        int value;
 
-        int health;
+        Health(int h = 100) : value(h) {}
     };
 }
