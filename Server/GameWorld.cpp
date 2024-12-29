@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "Logger.h"
+#include "AngleUtils.h"
 #include <random>
 
 GameWorld::GameWorld()
@@ -51,12 +52,31 @@ void GameWorld::spawnFood()
     Logger::info("Spawned food. Total food count: {}", foods.size());
 }
 
-std::unordered_map<uint32_t, std::unique_ptr<Player>> &GameWorld::getPlayers()
+void GameWorld::updatePlayerAngle(uint32_t id, float angleDegrees)
+{
+    auto it = players.find(id);
+
+    if (it != players.end())
+    {
+        float angleRadians = AngleUtils::degreesToRadians(angleDegrees);
+        it->second->setAngle(angleRadians);
+    }
+}
+
+void GameWorld::update(float dt)
+{
+    for (auto &[id, playerPtr] : players)
+    {
+        playerPtr->update(dt);
+    }
+}
+
+const std::unordered_map<uint32_t, std::unique_ptr<Player>> &GameWorld::getPlayers() const
 {
     return players;
 }
 
-std::vector<Food> &GameWorld::getFood()
+const std::vector<Food> &GameWorld::getFood() const
 {
     return foods;
 }

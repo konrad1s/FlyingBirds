@@ -5,6 +5,6 @@ add_library(ServerEntities
 
 target_include_directories(ServerEntities PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ServerEntities PRIVATE
-    ServerComponents
+    ServerComponents Shared
     sfml-graphics sfml-window sfml-system
 )

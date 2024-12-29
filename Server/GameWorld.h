@@ -17,9 +17,12 @@ public:
     void removePlayer(uint32_t id);
 
     void spawnFood();
+    void updatePlayerAngle(uint32_t id, float angleDegrees);
 
-    std::unordered_map<uint32_t, std::unique_ptr<Player>>& getPlayers();
-    std::vector<Food>& getFood();
+    void update(float dt);
+
+    const std::unordered_map<uint32_t, std::unique_ptr<Player>>& getPlayers() const;
+    const std::vector<Food>& getFood() const;
 
 private:
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;

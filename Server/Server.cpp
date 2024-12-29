@@ -59,15 +59,41 @@ void Server::update()
 
 void Server::receiveFromClient(ClientId clientId)
 {
-    sf::Packet packet;
-    sf::Socket::Status status = clients[clientId]->getSocket().receive(packet);
+    network::Envelope envelope;
+    int result = clients[clientId]->receiveMessage<network::Envelope>(envelope);
 
-    if (status == sf::Socket::Done)
+    if (result == 0)
     {
-        
-    }
-    else if (status == sf::Socket::Disconnected)
-    {
-        
+        if (envelope.category() == network::Envelope::CLIENT_TO_SERVER)
+        {
+            auto msgType = envelope.c2s().type();
+
+            switch (msgType)
+            {
+            case network::ClientToServer::MOVE:
+            {
+                Events::ClientDataUpdatedEvent event{clientId, envelope.c2s()};
+                eventBus.publish<Events::ClientDataUpdatedEvent>(event);
+            }
+            break;
+            case network::ClientToServer::JOIN:
+            {
+                Events::ClientConnectedEvent event{clientId};
+                eventBus.publish<Events::ClientConnectedEvent>(event);
+            }
+            break;
+            case network::ClientToServer::QUIT:
+            {
+                Events::ClientDisconnectedEvent event{clientId};
+                eventBus.publish<Events::ClientDisconnectedEvent>(event);
+            }
+            break;
+            default:
+            {
+                Logger::warning("Received unknown ClientToServer message");
+            }
+            break;
+            }
+        }
     }
 }

@@ -40,6 +40,7 @@ private:
     void sendWelcomeToClient(uint32_t clientId);
     void broadcastGameState();
 
+private:
     State state = State::waitingForClients;
 
     std::promise<std::string> promptInput;

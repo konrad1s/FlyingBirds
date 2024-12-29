@@ -15,6 +15,12 @@ GameManager::GameManager(const ConfigServer &config)
             this->onClientConnected(e.clientId);
         });
 
+    eventBus.subscribe<Events::ClientDataUpdatedEvent>(
+        [this](const Events::ClientDataUpdatedEvent &e)
+        {
+            this->onClientMessage(e.clientId, e.message);
+        });
+
     promptThreadRunning = true;
     promptThread = std::thread(&GameManager::handlePrompt, this);
 }
@@ -69,6 +75,7 @@ void GameManager::update(float deltaTime)
     }
     else if (state == State::running)
     {
+        gameWorld.update(deltaTime);
         broadcastGameState();
     }
     else if (state == State::finished)
@@ -131,6 +138,8 @@ void GameManager::onClientDisconnected(uint32_t clientId)
 
 void GameManager::onClientMessage(uint32_t clientId, const network::ClientToServer &msg)
 {
+    float angleDegrees = msg.angle();
+    gameWorld.updatePlayerAngle(clientId, angleDegrees);
 }
 
 void GameManager::sendWelcomeToClient(uint32_t clientId)

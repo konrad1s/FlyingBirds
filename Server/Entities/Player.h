@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include "Size.h"
-#include "Velocity.h"
+#include "Speed.h"
 #include "Position.h"
 
 class Player
@@ -15,8 +15,11 @@ public:
     Components::Position getPosition() const;
     void setPosition(const Components::Position& pos);
 
-    Components::Velocity getVelocity() const;
-    void setVelocity(const Components::Velocity& vel);
+    Components::Speed getSpeed() const;
+    void setSpeed(const Components::Speed& vel);
+
+    float getAngle() const;
+    void setAngle(const float angle);
 
     Components::Size getSize() const;
 
@@ -25,7 +28,8 @@ public:
 
 private:
     uint32_t id;
+    float angle;
     Components::Position position;
-    Components::Velocity velocity;
+    Components::Speed speed;
     Components::Size size;
 };

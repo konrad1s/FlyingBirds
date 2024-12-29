@@ -14,9 +14,9 @@ namespace Events
         uint32_t clientId;
     };
 
-    struct ClientMessageEvent
+    struct ClientDataUpdatedEvent
     {
         uint32_t clientId;
-        network::ClientToServer c2sMessage;
+        network::ClientToServer message;
     };
 }
