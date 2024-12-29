@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "ResourceManager.h"
 #include "Logger.h"
+#include "MovementSystem.h"
 
 GameManager::GameManager() : window(sf::VideoMode(800, 800), "Game"), isRunning(false)
 {
@@ -86,6 +87,7 @@ void GameManager::updateLoop()
 {
     static float deltaTime;
     sf::Clock clock;
+    MovementSystem movementSystem(client);
 
     while (isRunning) 
     {
@@ -96,6 +98,7 @@ void GameManager::updateLoop()
             if (world)
             {
                 world->update(deltaTime);
+                movementSystem.update(*world, deltaTime);
             }
         }
 
@@ -110,8 +113,6 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 
 void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
 {
-    Logger::info("Data update received");
-
     {
         std::lock_guard<std::mutex> lock(entityMutex);
         if (world)

@@ -17,6 +17,9 @@ public:
 
     void updateFromServer(const network::ServerToClient &message);
 
+    const std::unordered_map<uint32_t, std::unique_ptr<Player>> &getPlayers() const { return players; }
+    const std::unordered_map<uint32_t, std::unique_ptr<Food>> &getFoods() const { return foods; }
+
 private:
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::unordered_map<uint32_t, std::unique_ptr<Food>> foods;
