@@ -2,27 +2,31 @@
 
 #include <SFML/Graphics.hpp>
 #include "Entity.h"
-#include "Health.h"
-#include "Sprite.h"
 #include "Transform.h"
+#include "Sprite.h"
+#include "Mass.h"
 
 class Player : public Entity
 {
 public:
     Player();
+
     void update(float deltaTime) override;
     void render(sf::RenderWindow &window) override;
 
     void setPosition(float x, float y);
-    void setHealth(int hp);
-    void setTexture(sf::Texture* texture);
+    float getX() const;
+    float getY() const;
 
-    const Components::Transform& getTransform() const { return transform; }
+    float getMass() const;
+    void setMass(float newMass);
+
+    void setTexture(sf::Texture *texture);
 
 private:
-    const int speed = 100;
-
-    Components::Health health;
-    Components::Sprite sprite;
     Components::Transform transform;
+    Components::Sprite sprite;
+    Components::Mass mass;
+
+    float speed{100.f};
 };

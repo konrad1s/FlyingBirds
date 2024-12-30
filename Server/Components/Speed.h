@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Component.h"
 
 namespace Components
@@ -6,8 +7,7 @@ namespace Components
     class Speed : public Component
     {
     public:
+        explicit Speed(float s = 0.f) : value(s) {}
         float value;
-
-        Speed(float speed = 0.f) : value(speed) {}
     };
 }

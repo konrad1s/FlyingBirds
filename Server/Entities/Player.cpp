@@ -1,10 +1,7 @@
 #include "Player.h"
-#include "Logger.h"
-#include <cmath>
-#include <algorithm>
 
 Player::Player(uint32_t _id)
-    : id(_id), position(0.f, 0.f), speed(100.f), size(100.f), angle(0.f)
+    : id(_id), angle(0.f), position(0.f, 0.f), speed(100.f), mass(100.f)
 {
 }
 
@@ -39,24 +36,34 @@ void Player::setPosition(float x, float y)
     position.coords.y = y;
 }
 
-float Player::getSpeedValue() const
+float Player::getSpeed() const
 {
     return speed.value;
 }
 
-void Player::setSpeedValue(float val)
+void Player::setSpeed(float s)
 {
-    speed.value = val;
+    speed.value = s;
 }
 
-float Player::getSizeValue() const
+float Player::getMass() const
 {
-    return size.value;
+    return mass.getValue();
 }
 
-void Player::grow(float amount)
+void Player::setMass(float m)
 {
-    size.value += amount;
+    mass.setValue(m);
+}
+
+void Player::addMass(float m)
+{
+    mass.addMass(m);
+}
+
+float Player::getRadius() const
+{
+    return mass.getRadius();
 }
 
 void Player::update(float deltaTime, float xBoundary, float yBoundary)

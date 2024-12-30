@@ -22,8 +22,8 @@ void MovementSystem::update(GameWorld &game, float dt)
         return;
     }
 
-    float playerX = it->second->getTransform().x;
-    float playerY = it->second->getTransform().y;
+    float playerX = it->second->getX();
+    float playerY = it->second->getY();
 
     uint32_t closestFoodId = findClosestFood(playerX, playerY, game.getFoods());
 

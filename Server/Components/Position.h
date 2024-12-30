@@ -1,15 +1,18 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
 #include "Component.h"
+#include <SFML/System/Vector2.hpp>
 
 namespace Components
 {
     class Position : public Component
     {
     public:
-        sf::Vector2f coords;
+        explicit Position(float x = 0.f, float y = 0.f)
+            : coords(x, y)
+        {
+        }
 
-        Position(float x = 0.f, float y = 0.f) : coords(x, y) {}
+        sf::Vector2f coords;
     };
 }

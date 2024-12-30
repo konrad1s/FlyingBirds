@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <cmath>
+#include <algorithm>
 #include "Position.h"
 #include "Speed.h"
-#include "Size.h"
+#include "Mass.h"
 
 class Player
 {
@@ -13,17 +15,20 @@ public:
     uint32_t getId() const;
 
     float getAngle() const;
-    void  setAngle(float angle);
+    void setAngle(float angleDegrees);
 
     float getX() const;
     float getY() const;
-    void  setPosition(float x, float y);
+    void setPosition(float x, float y);
 
-    float getSpeedValue() const;
-    void  setSpeedValue(float val);
+    float getSpeed() const;
+    void setSpeed(float s);
 
-    float getSizeValue() const;
-    void  grow(float amount);
+    float getMass() const;
+    void setMass(float m);
+    void addMass(float m);
+
+    float getRadius() const;
 
     void update(float deltaTime, float xBoundary, float yBoundary);
 
@@ -33,5 +38,5 @@ private:
 
     Components::Position position;
     Components::Speed speed;
-    Components::Size size;
+    Components::Mass mass;
 };

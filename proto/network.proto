@@ -44,7 +44,7 @@ message ServerToClient {
     message Entity {
         uint32 id = 1;
         Vector2 position = 2;
-        float size = 3;
+        float mass = 3;
     }
 
     repeated Entity players = 2; 

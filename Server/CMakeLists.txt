@@ -10,6 +10,7 @@ set(SERVER_SOURCES
 
 add_subdirectory(Entities)
 add_subdirectory(Components)
+add_subdirectory(Systems)
 
 add_executable(server
     ${SERVER_SOURCES}
@@ -17,7 +18,7 @@ add_executable(server
 
 target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(server PUBLIC
-    ServerEntities ServerComponents
+    ServerEntities ServerComponents ServerSystems
     Shared
     proto_generated
     sfml-system sfml-network sfml-graphics sfml-window

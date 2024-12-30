@@ -171,7 +171,7 @@ void GameManager::broadcastGameState()
         entityPlayer->set_id(id);
         entityPlayer->mutable_position()->set_x(playerPtr->getX());
         entityPlayer->mutable_position()->set_y(playerPtr->getY());
-        entityPlayer->set_size(playerPtr->getSizeValue());
+        entityPlayer->set_mass(playerPtr->getMass());
     }
 
     for (auto &food : gameWorld.getFood())
@@ -181,7 +181,7 @@ void GameManager::broadcastGameState()
         entityFood->set_id(foodIdCounter++);
         entityFood->mutable_position()->set_x(food.getX());
         entityFood->mutable_position()->set_y(food.getY());
-        entityFood->set_size(food.getRadius());
+        entityFood->set_mass(food.getRadius());
     }
 
     server->broadcast<network::Envelope>(envelope);

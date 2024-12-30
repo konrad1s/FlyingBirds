@@ -1,18 +1,22 @@
-
 #pragma once
 
-#include "World.h"
-#include <SFML/System/Vector2.hpp>
+#include "ISystem.h"
+#include "GameWorld.h"
 
-class FoodSystem
+class FoodSystem : public ISystem
 {
 public:
-    void spawnFood(World &world, int count, const sf::Vector2f &minPos, const sf::Vector2f &maxPos);
-    void update(World &world, float deltaTime);
+    explicit FoodSystem(float spawnInterval = 5.0f);
+
+    void update(GameWorld &world, float deltaTime) override;
 
 private:
-    float spawnTimer = 0.f;
-    const float spawnInterval = 5.f;
+    void spawnFood(GameWorld &world);
 
-    void spawnFood(World &world, int count, const sf::Vector2f &minPos, const sf::Vector2f &maxPos);
+    float spawnInterval;
+    float timeSinceLastSpawn;
+
+    std::mt19937 rng;
+    std::uniform_int_distribution<int> foodCountDist{1, 3};
+    std::uniform_real_distribution<float> positionDist;
 };

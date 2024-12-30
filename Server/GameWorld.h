@@ -7,6 +7,7 @@
 #include <random> 
 #include "Player.h"
 #include "Food.h"
+#include "ISystem.h"
 
 class GameWorld
 {
@@ -24,9 +25,13 @@ public:
     const std::unordered_map<uint32_t, std::unique_ptr<Player>>& getPlayers() const;
     const std::vector<Food>& getFood() const;
 
+    void removeFoodAt(std::size_t index);
+
 private:
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::vector<Food> foods;
+
+    std::vector<std::unique_ptr<ISystem>> systems;
 
     std::mt19937 rng;
 };

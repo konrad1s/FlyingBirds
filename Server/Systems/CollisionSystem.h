@@ -1,13 +1,11 @@
 
 #pragma once
 
-#include "World.h"
+#include "ISystem.h"
+#include "GameWorld.h"
 
-class CollisionSystem
+class CollisionSystem : public ISystem
 {
 public:
-    void update(World &world, float deltaTime);
-
-private:
-    bool circlesCollide(const sf::Vector2f &posA, float radiusA, const sf::Vector2f &posB, float radiusB);
+    void update(GameWorld& world, float deltaTime) override;
 };

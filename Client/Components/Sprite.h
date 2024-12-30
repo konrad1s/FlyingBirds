@@ -1,16 +1,13 @@
 #pragma once
 
-#include "Component.h"
 #include <SFML/Graphics.hpp>
+#include "Component.h"
 
 namespace Components
 {
     class Sprite : public Component
     {
     public:
-        Sprite() {}
-
-    public:
-        sf::Sprite sprite;
+        sf::Sprite sprite; 
     };
 }

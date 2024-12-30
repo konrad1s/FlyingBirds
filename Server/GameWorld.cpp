@@ -2,6 +2,8 @@
 #include "Logger.h"
 #include "AngleUtils.h"
 #include "ConfigServer.h"
+#include "MovementSystem.h"
+#include "CollisionSystem.h"
 #include <random>
 #include <chrono>
 #include <memory>
@@ -9,6 +11,9 @@
 GameWorld::GameWorld()
 {
     rng.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
+
+    systems.push_back(std::make_unique<MovementSystem>());
+    systems.push_back(std::make_unique<CollisionSystem>());
 }
 
 void GameWorld::addPlayer(uint32_t id)
@@ -39,7 +44,7 @@ void GameWorld::removePlayer(uint32_t id)
 
 void GameWorld::spawnFood()
 {
-    std::uniform_int_distribution<int> foodCountDist(1, 3);
+    std::uniform_int_distribution<int> foodCountDist(1, 5);
     std::uniform_real_distribution<float> positionDist(0.f, ConfigServer::worldSize);
 
     int totalNewFood = 0;
@@ -50,7 +55,7 @@ void GameWorld::spawnFood()
 
         for (int i = 0; i < foodCount; ++i)
         {
-            Food f(Components::Position(positionDist(rng), positionDist(rng)));
+            Food f(positionDist(rng), positionDist(rng));
             foods.push_back(std::move(f));
         }
     }
@@ -78,9 +83,9 @@ void GameWorld::updatePlayerAngle(uint32_t id, float angleDegrees)
 
 void GameWorld::update(float dt)
 {
-    for (auto &[id, playerPtr] : players)
+    for (auto &system : systems)
     {
-        playerPtr->update(dt, ConfigServer::worldSize, ConfigServer::worldSize);
+        system->update(*this, dt);
     }
 }
 
@@ -92,4 +97,12 @@ const std::unordered_map<uint32_t, std::unique_ptr<Player>> &GameWorld::getPlaye
 const std::vector<Food> &GameWorld::getFood() const
 {
     return foods;
+}
+
+void GameWorld::removeFoodAt(std::size_t index)
+{
+    if (index < foods.size())
+    {
+        foods.erase(foods.begin() + index);
+    }
 }

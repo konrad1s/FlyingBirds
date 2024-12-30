@@ -1,10 +1,11 @@
 
 #pragma once
 
-#include "World.h"
+#include "ISystem.h"
+#include "GameWorld.h"
 
-class MovementSystem
+class MovementSystem : public ISystem
 {
 public:
-    void update(World &world, float deltaTime);
+    void update(GameWorld& world, float deltaTime) override;
 };
