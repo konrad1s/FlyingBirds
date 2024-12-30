@@ -150,6 +150,9 @@ void GameManager::sendWelcomeToClient(uint32_t clientId)
     network::ServerToClient *s2c = envelope.mutable_s2c();
     s2c->set_type(network::ServerToClient::WELCOME);
 
+    auto player = s2c->add_players();
+    player->set_id(clientId);
+
     server->sendToClient<network::Envelope>(clientId, envelope);
 }
 

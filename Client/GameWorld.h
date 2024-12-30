@@ -15,12 +15,16 @@ public:
     void update(float dt);
     void render(sf::RenderWindow &window);
 
+    void setMyPlayerId(uint32_t id) { myPlayerId = id; }
+    uint32_t getMyPlayerId() { return myPlayerId; }
+
     void updateFromServer(const network::ServerToClient &message);
 
     const std::unordered_map<uint32_t, std::unique_ptr<Player>> &getPlayers() const { return players; }
     const std::unordered_map<uint32_t, std::unique_ptr<Food>> &getFoods() const { return foods; }
 
 private:
+    uint32_t myPlayerId;
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::unordered_map<uint32_t, std::unique_ptr<Food>> foods;
 };

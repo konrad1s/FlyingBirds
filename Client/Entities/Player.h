@@ -17,6 +17,8 @@ public:
     void setHealth(int hp);
     void setTexture(sf::Texture* texture);
 
+    const Components::Transform& getTransform() const { return transform; }
+
 private:
     const int speed = 100;
 

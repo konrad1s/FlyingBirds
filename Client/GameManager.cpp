@@ -37,8 +37,6 @@ void GameManager::run()
     renderThread = std::thread(&GameManager::renderLoop, this);
     updateThread = std::thread(&GameManager::updateLoop, this);
 
-    world = std::make_unique<GameWorld>();
-
     client = std::make_unique<Client>(sf::IpAddress::LocalHost, 5000, eventBus);
     client->start();
 
@@ -108,7 +106,18 @@ void GameManager::updateLoop()
 
 void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
-    Logger::info("Server welcome received");
+    if (!evt.message.players().empty())
+    {
+        world = std::make_unique<GameWorld>();
+        auto player = evt.message.players().begin();
+
+        world->setMyPlayerId(player->id());
+        Logger::info("Server welcome received, player id {}", player->id());
+    }
+    else
+    {
+        Logger::warning("Server welcome received, but players list is empty.");
+    }
 }
 
 void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
