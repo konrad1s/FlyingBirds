@@ -3,7 +3,7 @@
 #include "Logger.h"
 #include "MovementSystem.h"
 
-GameManager::GameManager() : window(sf::VideoMode(800, 800), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(850, 850), "Game"), isRunning(false)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)

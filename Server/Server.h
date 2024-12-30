@@ -11,7 +11,7 @@ class Server
 public:
     using ClientId = uint32_t;
 
-    Server(const ConfigServer &config, EventBus &eb);
+    Server(EventBus &eb);
     ~Server();
 
     bool start();
@@ -29,7 +29,6 @@ public:
 private:
     void receiveFromClient(ClientId clientId);
 
-    const ConfigServer &config;
     EventBus &eventBus;
 
     sf::TcpListener listener;

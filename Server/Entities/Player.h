@@ -25,7 +25,7 @@ public:
     float getSizeValue() const;
     void  grow(float amount);
 
-    void update(float deltaTime);
+    void update(float deltaTime, float xBoundary, float yBoundary);
 
 private:
     uint32_t id;

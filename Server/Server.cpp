@@ -2,8 +2,8 @@
 #include "Logger.h"
 #include "Events.h"
 
-Server::Server(const ConfigServer &config, EventBus &eb)
-    : config(config), eventBus(eb)
+Server::Server(EventBus &eb)
+    : eventBus(eb)
 {
 }
 
@@ -14,12 +14,12 @@ Server::~Server()
 
 bool Server::start()
 {
-    if (listener.listen(config.port) != sf::Socket::Done)
+    if (listener.listen(ConfigServer::port) != sf::Socket::Done)
     {
-        Logger::error("Failed to bind listener to port {}", config.port);
+        Logger::error("Failed to bind listener to port {}", ConfigServer::port);
         return false;
     }
-    Logger::info("Server listening on port {}", config.port);
+    Logger::info("Server listening on port {}", ConfigServer::port);
 
     listener.setBlocking(false);
 

@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Logger.h"
 #include <cmath>
+#include <algorithm>
 
 Player::Player(uint32_t _id)
     : id(_id), position(0.f, 0.f), speed(100.f), size(100.f), angle(0.f)
@@ -58,15 +59,17 @@ void Player::grow(float amount)
     size.value += amount;
 }
 
-void Player::update(float deltaTime)
+void Player::update(float deltaTime, float xBoundary, float yBoundary)
 {
     float dx = std::cos(angle) * speed.value * deltaTime;
     float dy = std::sin(angle) * speed.value * deltaTime;
 
-    Logger::info("Player {} moved from ({}, {}) to ({}, {})",
-                 id, position.coords.x, position.coords.y,
-                 position.coords.x + dx, position.coords.y + dy);
+    float newX = position.coords.x + dx;
+    float newY = position.coords.y + dy;
 
-    position.coords.x += dx;
-    position.coords.y += dy;
+    newX = std::clamp(newX, 0.0f, xBoundary);
+    newY = std::clamp(newY, 0.0f, yBoundary);
+
+    position.coords.x = newX;
+    position.coords.y = newY;
 }

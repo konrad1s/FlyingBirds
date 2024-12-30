@@ -1,7 +1,10 @@
 #include "GameWorld.h"
 #include "Logger.h"
 #include "AngleUtils.h"
+#include "ConfigServer.h"
 #include <random>
+#include <chrono>
+#include <memory>
 
 GameWorld::GameWorld()
 {
@@ -12,7 +15,7 @@ void GameWorld::addPlayer(uint32_t id)
 {
     auto player = std::make_unique<Player>(id);
 
-    std::uniform_real_distribution<float> dist(0.f, 800.f);
+    std::uniform_real_distribution<float> dist(0.f, ConfigServer::worldSize);
     player->setPosition(dist(rng), dist(rng));
 
     players[id] = std::move(player);
@@ -36,20 +39,23 @@ void GameWorld::removePlayer(uint32_t id)
 
 void GameWorld::spawnFood()
 {
-    std::uniform_int_distribution<int> foodCountDist(0, 3);
-    std::uniform_real_distribution<float> positionDist(0.f, 800.f);
+    std::uniform_int_distribution<int> foodCountDist(1, 3);
+    std::uniform_real_distribution<float> positionDist(0.f, ConfigServer::worldSize);
 
+    int totalNewFood = 0;
     for (auto &[playerId, playerPtr] : players)
     {
         int foodCount = foodCountDist(rng);
+        totalNewFood += foodCount;
 
         for (int i = 0; i < foodCount; ++i)
         {
             Food f(Components::Position(positionDist(rng), positionDist(rng)));
-            foods.push_back(f);
+            foods.push_back(std::move(f));
         }
     }
-    Logger::info("Spawned food. Total food count: {}", foods.size());
+
+    Logger::info("Spawned {} new food items. Total food count: {}", totalNewFood, foods.size());
 }
 
 void GameWorld::updatePlayerAngle(uint32_t id, float angleDegrees)
@@ -60,6 +66,13 @@ void GameWorld::updatePlayerAngle(uint32_t id, float angleDegrees)
     {
         float angleRadians = AngleUtils::degreesToRadians(angleDegrees);
         it->second->setAngle(angleRadians);
+
+        Logger::debug("Updated player {} angle to {} degrees ({} radians).",
+                     id, angleDegrees, angleRadians);
+    }
+    else
+    {
+        Logger::warning("Attempted to update angle for non-existent player {}.", id);
     }
 }
 
@@ -67,7 +80,7 @@ void GameWorld::update(float dt)
 {
     for (auto &[id, playerPtr] : players)
     {
-        playerPtr->update(dt);
+        playerPtr->update(dt, ConfigServer::worldSize, ConfigServer::worldSize);
     }
 }
 

@@ -3,11 +3,11 @@
 #include "Logger.h"
 #include "Events.h"
 
-GameManager::GameManager(const ConfigServer &config)
+GameManager::GameManager()
     : state(State::waitingForClients)
 {
     promptFuture = promptInput.get_future();
-    server = std::make_unique<Server>(config, eventBus);
+    server = std::make_unique<Server>(eventBus);
 
     eventBus.subscribe<Events::ClientConnectedEvent>(
         [this](const Events::ClientConnectedEvent &e)

@@ -1,8 +1,9 @@
 #pragma once
 
-class ConfigServer
+#include <cstdint>
+
+namespace ConfigServer
 {
-public:
-    int port = 5000;
-    int tickRate = 60;
-};
+    constexpr int port = 5000;
+    constexpr float worldSize = 800.0f;
+}

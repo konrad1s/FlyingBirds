@@ -3,8 +3,7 @@
 
 int main()
 {
-    const ConfigServer config;
-    GameManager gameManager(config);
+    GameManager gameManager;
 
     gameManager.run();
 

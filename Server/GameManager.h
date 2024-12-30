@@ -23,7 +23,7 @@ public:
         finished
     };
 
-    GameManager(const ConfigServer& config);
+    GameManager();
     ~GameManager();
 
     void run();
