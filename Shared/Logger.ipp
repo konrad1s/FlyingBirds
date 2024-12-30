@@ -1,20 +1,30 @@
 template <typename... Args>
-void Logger::log(Level level, std::format_string<Args...> fmt, Args &&...args)
+void Logger::log(Level level, std::format_string<Args...> fmt, Args&&... args)
 {
+    if (static_cast<int>(level) < static_cast<int>(currentLevel))
+    {
+        return;
+    }
+
     try
     {
-        std::string message = std::format(fmt, std::forward<Args>(args)...);
-        std::string time = getCurrentTime();
-        const char *levelStr = levelToString(level);
+        std::string message  = std::format(fmt, std::forward<Args>(args)...);
+        std::string time     = getCurrentTime();
+        const char* levelStr = levelToString(level);
         std::string finalMsg = std::format("[{}] [{}] {}\n", levelStr, time, message);
 
+        std::lock_guard<std::mutex> lock(logMutex);
+
+        if (logToFile && fileStream.is_open())
         {
-            std::lock_guard<std::mutex> lock(logMutex);
-            if (level == Level::ERROR)
-                std::cerr << finalMsg;
-            else
-                std::cout << finalMsg;
+            fileStream << finalMsg;
+            fileStream.flush();
         }
+
+        if (level == Level::ERROR)
+            std::cerr << finalMsg;
+        else
+            std::cout << finalMsg;
     }
     catch (const std::format_error &e)
     {
@@ -35,6 +45,12 @@ void Logger::info(std::format_string<Args...> fmt, Args &&...args)
 }
 
 template <typename... Args>
+void Logger::debug(std::format_string<Args...> fmt, Args &&...args)
+{
+    log(Level::DEBUG, fmt, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
 void Logger::warning(std::format_string<Args...> fmt, Args &&...args)
 {
     log(Level::WARNING, fmt, std::forward<Args>(args)...);
@@ -52,6 +68,8 @@ constexpr const char *Logger::levelToString(const Level level)
     {
     case Level::INFO:
         return "INFO";
+    case Level::DEBUG:
+        return "DEBUG";
     case Level::WARNING:
         return "WARNING";
     case Level::ERROR:

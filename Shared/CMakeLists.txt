@@ -1,5 +1,6 @@
 add_library(Shared STATIC
     NetworkHandler.cpp
+    Logger.cpp
 )
 
 target_include_directories(Shared PUBLIC
