@@ -8,7 +8,7 @@ ResourceManager& ResourceManager::getInstance()
 
 void ResourceManager::unloadAll()
 {
-    std::lock_guard<std::mutex> lock(resourceMutex);
+    std::unique_lock<std::shared_mutex> lock(resourceMutex);
 
     resources.clear();
 }
