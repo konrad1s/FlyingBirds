@@ -1,7 +1,7 @@
 #include "GameManager.h"
 #include "ResourceManager.h"
 #include "Logger.h"
-#include "MovementSystem.h"
+#include "Systems.h"
 
 GameManager::GameManager() : window(sf::VideoMode(850, 850), "Game"), isRunning(false)
 {

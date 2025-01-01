@@ -52,12 +52,14 @@ void Food::setMass(float newMass)
     mass = Components::Mass(newMass);
 }
 
-void Food::setTexture(sf::Texture *texture)
+void Food::setTexture(const std::shared_ptr<sf::Texture> &texture)
 {
     if (texture)
     {
-        sprite.sprite.setTexture(*texture, true);
+        foodTexture = texture;
+        sprite.sprite.setTexture(*foodTexture, true);
+
         sf::FloatRect bounds = sprite.sprite.getLocalBounds();
-        sprite.sprite.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
+        sprite.sprite.setOrigin(bounds.width * 0.5f, bounds.height * 0.5f);
     }
 }

@@ -21,9 +21,10 @@ public:
     float getMass() const;
     void setMass(float newMass);
 
-    void setTexture(sf::Texture *texture);
+    void setTexture(const std::shared_ptr<sf::Texture> &texture);
 
 private:
+    std::shared_ptr<sf::Texture> foodTexture;
     Components::Transform transform;
     Components::Sprite sprite;
     Components::Mass mass;

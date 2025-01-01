@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "Sprite.h"
 #include "Mass.h"
+#include "Animation.h"
 
 class Player : public Entity
 {
@@ -21,12 +22,14 @@ public:
     float getMass() const;
     void setMass(float newMass);
 
-    void setTexture(sf::Texture *texture);
+    Components::Animation &getAnimation();
+    void setTexture(const std::shared_ptr<sf::Texture> &texture);
 
 private:
     Components::Transform transform;
     Components::Sprite sprite;
     Components::Mass mass;
+    Components::Animation animation;
 
     float speed{100.f};
 };
