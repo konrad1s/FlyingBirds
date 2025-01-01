@@ -11,7 +11,7 @@
 class GameWorld
 {
 public:
-    GameWorld() = default;
+    GameWorld(int windowSizeX, int windowSizeY);
 
     void update(float dt);
     void render(sf::RenderWindow &window);
@@ -29,4 +29,6 @@ private:
     EntityFactory factory;
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::unordered_map<uint32_t, std::unique_ptr<Food>> foods;
+    sf::Sprite background;
+    std::shared_ptr<sf::Texture> backgroundTexture;
 };

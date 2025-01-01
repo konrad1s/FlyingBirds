@@ -2,6 +2,34 @@
 #include "ResourceManager.h"
 #include <unordered_set>
 
+GameWorld::GameWorld(int windowSizeX, int windowSizeY)
+{
+    try
+    {
+        auto &resMgr = ResourceManager::getInstance();
+        backgroundTexture = resMgr.acquire<sf::Texture>("background", "backgrounds/background.png");
+
+        background.setTexture(*backgroundTexture);
+        background.setPosition(0.f, 0.f);
+
+        const auto textureSize = backgroundTexture->getSize();
+
+        float scaleX = static_cast<float>(windowSizeX) / static_cast<float>(textureSize.x);
+        float scaleY = static_cast<float>(windowSizeY) / static_cast<float>(textureSize.y);
+
+        float scale = std::min(scaleX, scaleY);
+        background.setScale(scale, scale);
+
+        float posX = (windowSizeX - textureSize.x * scale) / 2.f;
+        float posY = (windowSizeY - textureSize.y * scale) / 2.f;
+        background.setPosition(posX, posY);
+    }
+    catch (const std::exception &e)
+    {
+        Logger::error("Failed to load background: {}", e.what());
+    }
+}
+
 void GameWorld::update(float dt)
 {
     for (auto &[id, p] : players)
@@ -16,6 +44,8 @@ void GameWorld::update(float dt)
 
 void GameWorld::render(sf::RenderWindow &window)
 {
+    window.draw(background);
+
     for (auto &[id, p] : players)
     {
         p->render(window);

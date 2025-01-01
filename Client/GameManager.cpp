@@ -108,7 +108,7 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     if (!evt.message.players().empty())
     {
-        world = std::make_unique<GameWorld>();
+        world = std::make_unique<GameWorld>(850, 850);
         auto player = evt.message.players().begin();
 
         world->setMyPlayerId(player->id());
