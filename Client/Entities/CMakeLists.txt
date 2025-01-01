@@ -1,6 +1,7 @@
 add_library(ClientEntities
     Player.cpp
     Food.cpp
+    EntityFactory.cpp
 )
 
 target_include_directories(ClientEntities PUBLIC
@@ -9,6 +10,7 @@ target_include_directories(ClientEntities PUBLIC
 )
 
 target_link_libraries(ClientEntities PRIVATE
-    ClientComponents
+    client ClientComponents
+    Shared
     sfml-graphics sfml-window sfml-system
 )

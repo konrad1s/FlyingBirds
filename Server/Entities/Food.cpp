@@ -1,8 +1,13 @@
 #include "Food.h"
 
-Food::Food(float x, float y, float massValue)
-    : position(x, y), mass(massValue)
+Food::Food(uint32_t id, float x, float y, float massValue)
+    : id(id), position(x, y), mass(massValue)
 {
+}
+
+uint32_t Food::getId() const
+{
+    return id;
 }
 
 float Food::getX() const

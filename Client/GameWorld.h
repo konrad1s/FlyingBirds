@@ -6,6 +6,7 @@
 #include "network.pb.h"
 #include "Player.h"
 #include "Food.h"
+#include "EntityFactory.h"
 
 class GameWorld
 {
@@ -25,6 +26,7 @@ public:
 
 private:
     uint32_t myPlayerId;
+    EntityFactory factory;
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::unordered_map<uint32_t, std::unique_ptr<Food>> foods;
 };

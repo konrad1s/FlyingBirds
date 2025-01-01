@@ -6,7 +6,9 @@
 class Food
 {
 public:
-    Food(float x, float y, float massValue = 10.f);
+    Food(uint32_t id, float x, float y, float massValue = 10.f);
+
+    uint32_t getId() const;
 
     float getX() const;
     float getY() const;
@@ -17,6 +19,7 @@ public:
     float getRadius() const;
 
 private:
+    uint32_t id;
     Components::Position position;
     Components::Mass     mass;
 };

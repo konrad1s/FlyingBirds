@@ -1,4 +1,5 @@
 #include "GameWorld.h"
+#include "ResourceManager.h"
 #include <unordered_set>
 
 void GameWorld::update(float dt)
@@ -30,6 +31,7 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
 {
     std::unordered_set<uint32_t> updatedPlayerIds;
     std::unordered_set<uint32_t> updatedFoodIds;
+    auto &res = ResourceManager::getInstance();
 
     for (const auto &p : message.players())
     {
@@ -37,15 +39,9 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
         auto it = players.find(p.id());
         if (it == players.end())
         {
-            auto newPlayer = std::make_unique<Player>();
-
-            auto dummyTexture = std::make_unique<sf::Texture>();
-            dummyTexture->create(20, 20);
-            newPlayer->setTexture(dummyTexture.get());
-
-            newPlayer->setPosition(p.position().x(), p.position().y());
-            newPlayer->setMass(p.mass());
-
+            auto newPlayer = factory.createPlayer(p.position().x(),
+                                                  p.position().y(),
+                                                  p.mass());
             players.emplace(p.id(), std::move(newPlayer));
         }
         else
@@ -73,14 +69,9 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
         auto it = foods.find(f.id());
         if (it == foods.end())
         {
-            auto newFood = std::make_unique<Food>();
-
-            auto dummyTexture = std::make_unique<sf::Texture>();
-            dummyTexture->create(50, 50);  
-            newFood->setTexture(dummyTexture.get());
-
-            newFood->setPosition(f.position().x(), f.position().y());
-            newFood->setMass(f.mass());
+            auto newFood = factory.createFood(f.position().x(),
+                                              f.position().y(),
+                                              f.mass());
 
             foods.emplace(f.id(), std::move(newFood));
         }

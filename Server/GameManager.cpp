@@ -177,8 +177,8 @@ void GameManager::broadcastGameState()
     for (auto &food : gameWorld.getFood())
     {
         network::ServerToClient::Entity *entityFood = s2c->add_foods();
-        static uint32_t foodIdCounter = 0;
-        entityFood->set_id(foodIdCounter++);
+
+        entityFood->set_id(food.getId());
         entityFood->mutable_position()->set_x(food.getX());
         entityFood->mutable_position()->set_y(food.getY());
         entityFood->set_mass(food.getRadius());

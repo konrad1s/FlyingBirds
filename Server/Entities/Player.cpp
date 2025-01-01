@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(uint32_t _id)
-    : id(_id), angle(0.f), position(0.f, 0.f), speed(100.f), mass(100.f)
+    : id(_id), angle(0.f), position(0.f, 0.f), speed(100.f), mass(5000.f)
 {
 }
 

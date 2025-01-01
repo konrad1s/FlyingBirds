@@ -44,7 +44,7 @@ void GameWorld::removePlayer(uint32_t id)
 
 void GameWorld::spawnFood()
 {
-    std::uniform_int_distribution<int> foodCountDist(1, 5);
+    std::uniform_int_distribution<int> foodCountDist(5, 10);
     std::uniform_real_distribution<float> positionDist(0.f, ConfigServer::worldSize);
 
     int totalNewFood = 0;
@@ -55,7 +55,8 @@ void GameWorld::spawnFood()
 
         for (int i = 0; i < foodCount; ++i)
         {
-            Food f(positionDist(rng), positionDist(rng));
+            static uint32_t foodId = 0;
+            Food f(foodId++, positionDist(rng), positionDist(rng));
             foods.push_back(std::move(f));
         }
     }
