@@ -46,15 +46,27 @@ std::unique_ptr<Food> EntityFactory::createFood(float x, float y, float mass)
     food->setPosition(x, y);
     food->setMass(mass);
 
-    try
+    auto loadTexture = [&](const std::string &directory, int frameCount)
     {
-        auto texture = rm.acquire<sf::Texture>("food", "items/food.png");
-        food->setTexture(texture);
-    }
-    catch (const std::exception &e)
-    {
-        Logger::error("Failed to read food texture - {}", e.what());
-    }
+        /* keys like: "p1_flying_1" */
+        for (int i = 1; i <= frameCount; i++)
+        {
+            std::string key = directory + "_" + std::to_string(i);
+            std::string path = "items/" + directory + "/a" + std::to_string(i) + ".png";
+
+            try
+            {
+                auto texture = rm.acquire<sf::Texture>(key, path);
+                food->getAnimation().addFrame(texture);
+            }
+            catch (const std::exception &e)
+            {
+                Logger::error("EntityFactory: Failed to load texture - {}", e.what());
+            }
+        }
+    };
+
+    loadTexture("food", 8);
 
     return food;
 }

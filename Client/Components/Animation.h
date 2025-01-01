@@ -10,7 +10,7 @@ namespace Components
     class Animation : public Component
     {
     public:
-        Animation() : timePerFrame(0.1f), currentTime(0.f), currentFrame(0)
+        Animation() : timePerFrame(0.08f), currentTime(0.f), currentFrame(0)
         {
         }
 

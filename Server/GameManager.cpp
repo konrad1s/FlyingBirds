@@ -181,7 +181,7 @@ void GameManager::broadcastGameState()
         entityFood->set_id(food.getId());
         entityFood->mutable_position()->set_x(food.getX());
         entityFood->mutable_position()->set_y(food.getY());
-        entityFood->set_mass(food.getRadius());
+        entityFood->set_mass(food.getMass());
     }
 
     server->broadcast<network::Envelope>(envelope);

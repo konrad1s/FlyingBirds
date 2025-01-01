@@ -6,7 +6,7 @@
 class Food
 {
 public:
-    Food(uint32_t id, float x, float y, float massValue = 10.f);
+    Food(uint32_t id, float x, float y, float massValue = 1000.f);
 
     uint32_t getId() const;
 
