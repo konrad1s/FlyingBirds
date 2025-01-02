@@ -1,6 +1,10 @@
 #include "GameWorld.h"
 #include "ResourceManager.h"
+#include "Logger.h"
 #include <unordered_set>
+#include <algorithm>
+#include <exception>
+#include <cmath>
 
 GameWorld::GameWorld(int windowSizeX, int windowSizeY)
 {
@@ -12,16 +16,14 @@ GameWorld::GameWorld(int windowSizeX, int windowSizeY)
         background.setTexture(*backgroundTexture);
         background.setPosition(0.f, 0.f);
 
-        const auto textureSize = backgroundTexture->getSize();
-
+        auto textureSize = backgroundTexture->getSize();
         float scaleX = static_cast<float>(windowSizeX) / static_cast<float>(textureSize.x);
         float scaleY = static_cast<float>(windowSizeY) / static_cast<float>(textureSize.y);
-
-        float scale = std::min(scaleX, scaleY);
+        float scale  = std::min(scaleX, scaleY);
         background.setScale(scale, scale);
 
-        float posX = (windowSizeX - textureSize.x * scale) / 2.f;
-        float posY = (windowSizeY - textureSize.y * scale) / 2.f;
+        float posX = (windowSizeX - textureSize.x * scale) * 0.5f;
+        float posY = (windowSizeY - textureSize.y * scale) * 0.5f;
         background.setPosition(posX, posY);
     }
     catch (const std::exception &e)
@@ -32,13 +34,14 @@ GameWorld::GameWorld(int windowSizeX, int windowSizeY)
 
 void GameWorld::update(float dt)
 {
-    for (auto &[id, p] : players)
+    for (auto &[id, playerPtr] : players)
     {
-        p->update(dt);
+        playerPtr->update(dt);
     }
-    for (auto &[id, f] : foods)
+
+    for (auto &[id, entityPtr] : entities)
     {
-        f->update(dt);
+        entityPtr->update(dt);
     }
 }
 
@@ -46,41 +49,86 @@ void GameWorld::render(sf::RenderWindow &window)
 {
     window.draw(background);
 
-    for (auto &[id, p] : players)
+    /* Draw all players */
+    for (auto &[id, playerPtr] : players)
     {
-        p->render(window);
+        playerPtr->render(window);
     }
 
-    for (auto &[id, f] : foods)
+    /* Draw other entities */
+    for (auto &[id, entityPtr] : entities)
     {
-        f->render(window);
+        entityPtr->render(window);
     }
 }
 
 void GameWorld::updateFromServer(const network::ServerToClient &message)
 {
+    /* Track which IDs are still valid in this update */
     std::unordered_set<uint32_t> updatedPlayerIds;
-    std::unordered_set<uint32_t> updatedFoodIds;
-    auto &res = ResourceManager::getInstance();
+    std::unordered_set<uint32_t> updatedEntityIds;
 
-    for (const auto &p : message.players())
+    for (const auto &ent : message.entities())
     {
-        updatedPlayerIds.insert(p.id());
-        auto it = players.find(p.id());
-        if (it == players.end())
+        uint32_t entId = ent.id();
+
+        if (ent.entitytype() == network::ServerToClient::Entity::PLAYER)
         {
-            auto newPlayer = factory.createPlayer(p.position().x(),
-                                                  p.position().y(),
-                                                  p.mass());
-            players.emplace(p.id(), std::move(newPlayer));
+            updatedPlayerIds.insert(entId);
+
+            /* Check if this player is already added */
+            auto it = players.find(entId);
+            if (it == players.end())
+            {
+                auto newPlayer = factory.createPlayer(ent.position().x(), ent.position().y(), ent.mass());
+                players.emplace(entId, std::move(newPlayer));
+            }
+            else
+            {
+                it->second->setPosition(ent.position().x(), ent.position().y());
+                it->second->setMass(ent.mass());
+            }
         }
         else
         {
-            it->second->setPosition(p.position().x(), p.position().y());
-            it->second->setMass(p.mass());
+            updatedEntityIds.insert(entId);
+
+            /* Check if this entity is already added */
+            auto it = entities.find(entId);
+            if (it == entities.end())
+            {
+                switch (ent.entitytype())
+                {
+                case network::ServerToClient::Entity::FOOD:
+                {
+                    auto newFood = factory.createFood(ent.position().x(), ent.position().y(), ent.mass());
+                    entities.emplace(entId, std::move(newFood));
+                    break;
+                }
+                case network::ServerToClient::Entity::SPEEDBOOST:
+                {
+                    auto newBoost = factory.createSpeedBoost(ent.position().x(), ent.position().y());
+                    entities.emplace(entId, std::move(newBoost));
+                    break;
+                }
+                default:
+                    Logger::warning("Unknown entity type from server");
+                    break;
+                }
+            }
+            else
+            {
+                it->second->setPosition(ent.position().x(), ent.position().y());
+
+                if (auto f = dynamic_cast<Food*>(it->second.get()))
+                {
+                    f->setMass(ent.mass());
+                }
+            }
         }
     }
 
+    /* Remove stale players and entities */
     for (auto it = players.begin(); it != players.end(); )
     {
         if (updatedPlayerIds.find(it->first) == updatedPlayerIds.end())
@@ -93,30 +141,11 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
         }
     }
 
-    for (const auto &f : message.foods())
+    for (auto it = entities.begin(); it != entities.end(); )
     {
-        updatedFoodIds.insert(f.id());
-        auto it = foods.find(f.id());
-        if (it == foods.end())
+        if (updatedEntityIds.find(it->first) == updatedEntityIds.end())
         {
-            auto newFood = factory.createFood(f.position().x(),
-                                              f.position().y(),
-                                              f.mass());
-
-            foods.emplace(f.id(), std::move(newFood));
-        }
-        else
-        {
-            it->second->setPosition(f.position().x(), f.position().y());
-            it->second->setMass(f.mass());
-        }
-    }
-
-    for (auto it = foods.begin(); it != foods.end(); )
-    {
-        if (updatedFoodIds.find(it->first) == updatedFoodIds.end())
-        {
-            it = foods.erase(it);
+            it = entities.erase(it);
         }
         else
         {

@@ -68,8 +68,6 @@ void GameManager::update(float deltaTime)
             promptThread.join();
         promptThreadRunning = false;
 
-        gameWorld.spawnFood();
-
         state = State::running;
         Logger::info("GameManager state changed to running.");
     }
@@ -119,21 +117,14 @@ void GameManager::checkPrompt()
 
 void GameManager::onClientConnected(uint32_t clientId)
 {
-    auto playerPtr = std::make_unique<Player>(clientId);
-    clients[clientId] = std::move(playerPtr);
     gameWorld.addPlayer(clientId);
     Logger::info("Player {} connected to the game.", clientId);
-
     sendWelcomeToClient(clientId);
 }
 
 void GameManager::onClientDisconnected(uint32_t clientId)
 {
-    if (clients.find(clientId) != clients.end())
-    {
-        clients.erase(clientId);
-        Logger::info("Player {} disconnected from the game.", clientId);
-    }
+    gameWorld.removePlayer(clientId);
 }
 
 void GameManager::onClientMessage(uint32_t clientId, const network::ClientToServer &msg)
@@ -150,41 +141,58 @@ void GameManager::sendWelcomeToClient(uint32_t clientId)
     network::ServerToClient *s2c = envelope.mutable_s2c();
     s2c->set_type(network::ServerToClient::WELCOME);
 
-    auto player = s2c->add_players();
+    auto player = s2c->add_entities();
     player->set_id(clientId);
+    player->set_entitytype(network::ServerToClient::Entity::PLAYER);
 
     server->sendToClient<network::Envelope>(clientId, envelope);
 }
 
 void GameManager::broadcastGameState()
 {
-    network::Envelope envelope;
-    envelope.set_category(network::Envelope::SERVER_TO_CLIENT);
+    using namespace network;
 
-    network::ServerToClient* s2c = envelope.mutable_s2c();
-    s2c->set_type(network::ServerToClient::STATE_UPDATE);
+    Envelope envelope;
+    envelope.set_category(Envelope::SERVER_TO_CLIENT);
+    auto s2c = envelope.mutable_s2c();
+    s2c->set_type(ServerToClient::STATE_UPDATE);
 
-    for (auto& [id, playerPtr] : gameWorld.getPlayers())
+    for (auto &kv : gameWorld.getPlayers())
     {
-        network::ServerToClient::Entity *entityPlayer = s2c->add_players();
-    
-        entityPlayer->set_id(id);
-        entityPlayer->mutable_position()->set_x(playerPtr->getX());
-        entityPlayer->mutable_position()->set_y(playerPtr->getY());
-        entityPlayer->set_mass(playerPtr->getMass());
+        Player *playerPtr = kv.second.get();
+        auto netEnt = s2c->add_entities();
+
+        netEnt->set_id(playerPtr->getId());
+        netEnt->mutable_position()->set_x(playerPtr->getX());
+        netEnt->mutable_position()->set_y(playerPtr->getY());
+        netEnt->set_mass(playerPtr->getMass());
+        netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
     }
 
-    for (auto &food : gameWorld.getFood())
+    for (auto &entityPtr : gameWorld.getEntities())
     {
-        network::ServerToClient::Entity *entityFood = s2c->add_foods();
+        auto netEnt = s2c->add_entities();
 
-        entityFood->set_id(food.getId());
-        entityFood->mutable_position()->set_x(food.getX());
-        entityFood->mutable_position()->set_y(food.getY());
-        entityFood->set_mass(food.getMass());
+        netEnt->set_id(entityPtr->getId());
+        netEnt->mutable_position()->set_x(entityPtr->getX());
+        netEnt->mutable_position()->set_y(entityPtr->getY());
+        netEnt->set_mass(entityPtr->getMass());
+
+        switch (entityPtr->getEntityType())
+        {
+        case EntityType::Food:
+            netEnt->set_entitytype(ServerToClient::Entity::FOOD);
+            break;
+        case EntityType::SpeedBoost:
+            netEnt->set_entitytype(ServerToClient::Entity::SPEEDBOOST);
+            break;
+        default:
+            netEnt->set_entitytype(ServerToClient::Entity::UNKNOWN);
+            break;
+        }
     }
 
-    server->broadcast<network::Envelope>(envelope);
+    server->broadcast(envelope);
 }
 
 void GameManager::handlePrompt()

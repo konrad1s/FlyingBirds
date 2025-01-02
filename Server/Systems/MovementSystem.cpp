@@ -1,6 +1,7 @@
 #include "MovementSystem.h"
+#include "GameWorld.h"
+#include "Entity.h"
 #include "ConfigServer.h"
-#include "Player.h"
 
 void MovementSystem::update(GameWorld &world, float deltaTime)
 {

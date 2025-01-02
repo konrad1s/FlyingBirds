@@ -1,12 +1,13 @@
 #pragma once
 
-#include <unordered_map>
 #include <vector>
 #include <memory>
-#include <chrono>
-#include <random> 
+#include <random>
+#include <unordered_map>
+#include "Entity.h"
 #include "Player.h"
 #include "Food.h"
+#include "SpeedBoost.h"
 #include "ISystem.h"
 
 class GameWorld
@@ -14,22 +15,24 @@ class GameWorld
 public:
     GameWorld();
 
-    void addPlayer(uint32_t id);
-    void removePlayer(uint32_t id);
+    void addPlayer(uint32_t playerId);
+    void removePlayer(uint32_t playerId);
+    Player *findPlayerById(uint32_t playerId);
 
-    void spawnFood();
-    void updatePlayerAngle(uint32_t id, float angleDegrees);
+    void addEntity(std::unique_ptr<Entity> entity);
+    void removeEntityAt(std::size_t index);
 
-    void update(float dt);
+    const std::unordered_map<uint32_t, std::unique_ptr<Player>> &getPlayers() const { return players; }
+    const std::vector<std::unique_ptr<Entity>> &getEntities() const { return entities; }
 
-    const std::unordered_map<uint32_t, std::unique_ptr<Player>>& getPlayers() const;
-    const std::vector<Food>& getFood() const;
+    void update(float deltaTime);
+    void updatePlayerAngle(uint32_t playerId, float angleDegrees);
 
-    void removeFoodAt(std::size_t index);
+    std::mt19937 &getRNG() { return rng; }
 
 private:
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
-    std::vector<Food> foods;
+    std::vector<std::unique_ptr<Entity>> entities;
 
     std::vector<std::unique_ptr<ISystem>> systems;
 

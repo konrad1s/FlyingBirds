@@ -37,22 +37,6 @@ void Food::render(sf::RenderWindow &window)
     window.draw(sprite.sprite);
 }
 
-void Food::setPosition(float x, float y)
-{
-    transform.x = x;
-    transform.y = y;
-}
-
-float Food::getX() const
-{
-    return transform.x;
-}
-
-float Food::getY() const
-{
-    return transform.y;
-}
-
 float Food::getMass() const
 {
     return mass.getValue();

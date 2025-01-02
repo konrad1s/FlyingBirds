@@ -35,24 +35,19 @@ void Player::render(sf::RenderWindow &window)
         sprite.sprite.setScale(1.f, 1.f);
     }
 
+    if (transform.x < lastX)
+    {
+        sprite.sprite.setScale(-std::abs(sprite.sprite.getScale().x), sprite.sprite.getScale().y);
+    }
+    else if (transform.x > lastX)
+    {
+        sprite.sprite.setScale(std::abs(sprite.sprite.getScale().x), sprite.sprite.getScale().y);
+    }
+
     sprite.sprite.setPosition(transform.x, transform.y);
     window.draw(sprite.sprite);
-}
 
-void Player::setPosition(float x, float y)
-{
-    transform.x = x;
-    transform.y = y;
-}
-
-float Player::getX() const
-{
-    return transform.x;
-}
-
-float Player::getY() const
-{
-    return transform.y;
+    lastX = transform.x;
 }
 
 float Player::getMass() const

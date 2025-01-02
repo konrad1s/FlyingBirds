@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package network;
 
-message Envelope {
+message Envelope 
+{
     enum MessageCategory {
         UNKNOWN = 0;
         CLIENT_TO_SERVER = 1;
@@ -16,13 +17,16 @@ message Envelope {
     }
 }
 
-message Vector2 {
+message Vector2 
+{
     float x = 1;
     float y = 2;
 }
 
-message ClientToServer {
-    enum MessageType {
+message ClientToServer 
+{
+    enum MessageType 
+    {
         MOVE = 0;
         JOIN = 1;
         QUIT = 2;
@@ -32,21 +36,31 @@ message ClientToServer {
     float angle = 2;
 }
 
-message ServerToClient {
-    enum MessageType {
+message ServerToClient 
+{
+    enum MessageType 
+    {
         STATE_UPDATE = 0;
-        WELCOME = 1;
-        GOODBYE = 2;
+        WELCOME      = 1;
+        GOODBYE      = 2;
     }
-
     MessageType type = 1;
 
-    message Entity {
-        uint32 id = 1;
+    message Entity 
+    {
+        enum EntityType 
+        {
+            UNKNOWN    = 0;
+            PLAYER     = 1;
+            FOOD       = 2;
+            SPEEDBOOST = 3;
+        }
+
+        uint32 id   = 1;
         Vector2 position = 2;
-        float mass = 3;
+        float mass  = 3;
+        EntityType entityType = 4;
     }
 
-    repeated Entity players = 2; 
-    repeated Entity foods = 3;
+    repeated Entity entities = 2;
 }

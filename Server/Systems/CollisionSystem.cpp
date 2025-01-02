@@ -1,55 +1,73 @@
 #include "CollisionSystem.h"
+#include "GameWorld.h"
+#include "Player.h"
+#include "Food.h"
+#include "SpeedBoost.h"
 #include "Logger.h"
-#include <vector>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 void CollisionSystem::update(GameWorld &world, float deltaTime)
 {
-    /**
-     * TODO: naive approach, fix later
-     */
+    auto &entities = world.getEntities();
 
-    std::vector<std::size_t> foodsToErase;
-    foodsToErase.reserve(world.getFood().size());
+    std::vector<std::size_t> toRemove;
+    toRemove.reserve(entities.size());
 
-    for (auto& [playerId, playerPtr] : world.getPlayers())
+    for (auto &[playerId, playerPtr] : world.getPlayers())
     {
-        float px = playerPtr->getX();
-        float py = playerPtr->getY();
+        if (!playerPtr) continue;
 
+        float px      = playerPtr->getX();
+        float py      = playerPtr->getY();
         float pRadius = playerPtr->getRadius();
 
-        for (std::size_t i = 0; i < world.getFood().size(); i++)
+        for (std::size_t i = 0; i < entities.size(); ++i)
         {
-            const auto &food = world.getFood()[i];
+            const auto &entityPtr = entities[i];
+            if (!entityPtr) 
+            continue;
 
-            float fx = food.getX();
-            float fy = food.getY();
-            float fRadius = food.getRadius();
+            float ex = entityPtr->getX();
+            float ey = entityPtr->getY();
+            float eRadius = entityPtr->getRadius();
 
-            float dx = px - fx;
-            float dy = py - fy;
+            float dx    = px - ex;
+            float dy    = py - ey;
             float distSq = dx * dx + dy * dy;
+            float rSum   = pRadius + eRadius;
 
-            float radiusSum = pRadius + fRadius;
-
-            if (distSq <= radiusSum * radiusSum)
+            if (distSq <= rSum * rSum)
             {
-                playerPtr->addMass(food.getMass());
+                if (auto food = dynamic_cast<Food*>(entityPtr.get()))
+                {
+                    /* Player eats Food */
+                    playerPtr->addMass(food->getMass());
+                    toRemove.push_back(i);
+                }
+                else if (auto boost = dynamic_cast<SpeedBoost*>(entityPtr.get()))
+                {
+                    /* Player picks up SpeedBoost */
+                    float oldSpeed = playerPtr->getSpeed();
+                    float newSpeed = oldSpeed * boost->getMultiplier();
+                    playerPtr->setSpeed(newSpeed);
 
-                foodsToErase.push_back(i);
+                    Logger::info("Player {} got SpeedBoost {} => speed: {} -> {}",
+                                 playerPtr->getId(), boost->getId(),
+                                 oldSpeed, newSpeed);
+
+                    toRemove.push_back(i);
+                }
             }
         }
     }
 
-    std::sort(foodsToErase.begin(), foodsToErase.end());
-    foodsToErase.erase(std::unique(foodsToErase.begin(), foodsToErase.end()), foodsToErase.end());
+    std::sort(toRemove.begin(), toRemove.end());
+    toRemove.erase(std::unique(toRemove.begin(), toRemove.end()), toRemove.end());
 
-    for (auto it = foodsToErase.rbegin(); it != foodsToErase.rend(); ++it)
+    for (auto it = toRemove.rbegin(); it != toRemove.rend(); ++it)
     {
-        if (*it < world.getFood().size())
-        {
-            world.removeFoodAt(*it);
-        }
+        world.removeEntityAt(*it);
     }
 }

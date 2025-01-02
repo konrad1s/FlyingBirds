@@ -25,18 +25,18 @@ void MovementSystem::update(GameWorld &game, float dt)
     float playerX = it->second->getX();
     float playerY = it->second->getY();
 
-    uint32_t closestFoodId = findClosestFood(playerX, playerY, game.getFoods());
+    uint32_t closestEntityId = findClosestEntity(playerX, playerY, game.getEntities());
 
-    if (closestFoodId == 0)
+    if (closestEntityId == UINT32_MAX)
     {
         return;
     }
 
-    const auto &closestFood = game.getFoods().at(closestFoodId);
-    float foodX = closestFood->getX();
-    float foodY = closestFood->getY();
+    const auto &closestEntity = game.getEntities().at(closestEntityId);
+    float x = closestEntity->getX();
+    float y = closestEntity->getY();
 
-    float angleRadians = computeAngleToTarget(playerX, playerY, foodX, foodY);
+    float angleRadians = computeAngleToTarget(playerX, playerY, x, y);
     float angleDegrees = AngleUtils::radiansToDegrees(angleRadians);
 
     if (angleDegrees < 0)
@@ -64,13 +64,13 @@ uint32_t MovementSystem::findClosestPlayer(float x, float y,
     return 0;
 }
 
-uint32_t MovementSystem::findClosestFood(float x, float y,
-                                         const std::unordered_map<uint32_t, std::unique_ptr<Food>> &foods)
+uint32_t MovementSystem::findClosestEntity(float x, float y,
+                                           const std::unordered_map<uint32_t, std::unique_ptr<Entity>> &entities)
 {
-    uint32_t closestFoodId = 0;
+    uint32_t closestFoodId = UINT32_MAX;
     float minDistanceSquared = std::numeric_limits<float>::max();
 
-    for (const auto &[id, food] : foods)
+    for (const auto &[id, food] : entities)
     {
         float dx = food->getX() - x;
         float dy = food->getY() - y;

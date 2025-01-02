@@ -1,11 +1,12 @@
 #include "GameWorld.h"
-#include "Logger.h"
-#include "AngleUtils.h"
+#include <chrono>
 #include "ConfigServer.h"
+#include "Logger.h"
 #include "MovementSystem.h"
 #include "CollisionSystem.h"
+#include "EntitySpawnSystem.h"
 #include <random>
-#include <chrono>
+#include <algorithm>
 #include <memory>
 
 GameWorld::GameWorld()
@@ -14,14 +15,14 @@ GameWorld::GameWorld()
 
     systems.push_back(std::make_unique<MovementSystem>());
     systems.push_back(std::make_unique<CollisionSystem>());
+    systems.push_back(std::make_unique<EntitySpawnSystem>());
 }
 
 void GameWorld::addPlayer(uint32_t id)
 {
-    auto player = std::make_unique<Player>(id);
-
     std::uniform_real_distribution<float> dist(0.f, ConfigServer::worldSize);
-    player->setPosition(dist(rng), dist(rng));
+
+    auto player = std::make_unique<Player>(id, dist(rng), dist(rng), 5000.f, 120.f);
 
     players[id] = std::move(player);
     Logger::info("Added player {} to the game at position ({}, {}).",
@@ -42,68 +43,42 @@ void GameWorld::removePlayer(uint32_t id)
     }
 }
 
-void GameWorld::spawnFood()
+Player *GameWorld::findPlayerById(uint32_t playerId)
 {
-    std::uniform_int_distribution<int> foodCountDist(5, 10);
-    std::uniform_real_distribution<float> positionDist(0.f, ConfigServer::worldSize);
-
-    int totalNewFood = 0;
-    for (auto &[playerId, playerPtr] : players)
-    {
-        int foodCount = foodCountDist(rng);
-        totalNewFood += foodCount;
-
-        for (int i = 0; i < foodCount; ++i)
-        {
-            static uint32_t foodId = 0;
-            Food f(foodId++, positionDist(rng), positionDist(rng));
-            foods.push_back(std::move(f));
-        }
-    }
-
-    Logger::info("Spawned {} new food items. Total food count: {}", totalNewFood, foods.size());
-}
-
-void GameWorld::updatePlayerAngle(uint32_t id, float angleDegrees)
-{
-    auto it = players.find(id);
-
+    auto it = players.find(playerId);
     if (it != players.end())
     {
-        float angleRadians = AngleUtils::degreesToRadians(angleDegrees);
-        it->second->setAngle(angleRadians);
-
-        Logger::debug("Updated player {} angle to {} degrees ({} radians).",
-                     id, angleDegrees, angleRadians);
+        return it->second.get();
     }
-    else
+    return nullptr;
+}
+
+void GameWorld::addEntity(std::unique_ptr<Entity> entity)
+{
+    entities.push_back(std::move(entity));
+}
+
+void GameWorld::removeEntityAt(std::size_t index)
+{
+    if (index < entities.size())
     {
-        Logger::warning("Attempted to update angle for non-existent player {}.", id);
+        entities.erase(entities.begin() + index);
     }
 }
 
-void GameWorld::update(float dt)
+void GameWorld::updatePlayerAngle(uint32_t playerId, float angleDegrees)
+{
+    if (Player *p = findPlayerById(playerId))
+    {
+        float radians = angleDegrees * 3.14159f / 180.f;
+        p->setAngle(radians);
+    }
+}
+
+void GameWorld::update(float deltaTime)
 {
     for (auto &system : systems)
     {
-        system->update(*this, dt);
-    }
-}
-
-const std::unordered_map<uint32_t, std::unique_ptr<Player>> &GameWorld::getPlayers() const
-{
-    return players;
-}
-
-const std::vector<Food> &GameWorld::getFood() const
-{
-    return foods;
-}
-
-void GameWorld::removeFoodAt(std::size_t index)
-{
-    if (index < foods.size())
-    {
-        foods.erase(foods.begin() + index);
+        system->update(*this, deltaTime);
     }
 }

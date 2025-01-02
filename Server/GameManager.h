@@ -50,7 +50,6 @@ private:
 
     std::mutex promptMutex;
     EventBus eventBus;
-    std::unordered_map<uint32_t, std::unique_ptr<Player>> clients;
     std::unique_ptr<Server> server;
 
     GameWorld gameWorld;

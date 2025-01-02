@@ -106,13 +106,14 @@ void GameManager::updateLoop()
 
 void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
-    if (!evt.message.players().empty())
+    if (!evt.message.entities().empty())
     {
         world = std::make_unique<GameWorld>(850, 850);
-        auto player = evt.message.players().begin();
 
-        world->setMyPlayerId(player->id());
-        Logger::info("Server welcome received, player id {}", player->id());
+        auto &player = evt.message.entities().Get(0);
+
+        world->setMyPlayerId(player.id());
+        Logger::info("Server welcome received, player id {}", player.id());
     }
     else
     {
