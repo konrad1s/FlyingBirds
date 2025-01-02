@@ -1,6 +1,7 @@
 add_library(ServerSystems
     MovementSystem.cpp
     CollisionSystem.cpp
+    EntitySpawnSystem.cpp
 )
 
 target_include_directories(ServerSystems PUBLIC

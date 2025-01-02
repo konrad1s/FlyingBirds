@@ -17,45 +17,46 @@ void CollisionSystem::update(GameWorld &world, float deltaTime)
 
     for (auto &[playerId, playerPtr] : world.getPlayers())
     {
-        if (!playerPtr) continue;
+        if (!playerPtr)
+            continue;
 
-        float px      = playerPtr->getX();
-        float py      = playerPtr->getY();
+        float px = playerPtr->getX();
+        float py = playerPtr->getY();
         float pRadius = playerPtr->getRadius();
 
         for (std::size_t i = 0; i < entities.size(); ++i)
         {
             const auto &entityPtr = entities[i];
-            if (!entityPtr) 
-            continue;
+            if (!entityPtr)
+                continue;
 
             float ex = entityPtr->getX();
             float ey = entityPtr->getY();
             float eRadius = entityPtr->getRadius();
 
-            float dx    = px - ex;
-            float dy    = py - ey;
+            float dx = px - ex;
+            float dy = py - ey;
             float distSq = dx * dx + dy * dy;
-            float rSum   = pRadius + eRadius;
+            float rSum = pRadius + eRadius;
 
             if (distSq <= rSum * rSum)
             {
-                if (auto food = dynamic_cast<Food*>(entityPtr.get()))
+                if (auto food = dynamic_cast<Food *>(entityPtr.get()))
                 {
                     /* Player eats Food */
                     playerPtr->addMass(food->getMass());
                     toRemove.push_back(i);
                 }
-                else if (auto boost = dynamic_cast<SpeedBoost*>(entityPtr.get()))
+                else if (auto boost = dynamic_cast<SpeedBoost *>(entityPtr.get()))
                 {
                     /* Player picks up SpeedBoost */
-                    float oldSpeed = playerPtr->getSpeed();
-                    float newSpeed = oldSpeed * boost->getMultiplier();
-                    playerPtr->setSpeed(newSpeed);
+                    playerPtr->applySpeedBoost(boost->getMultiplier(), boost->getDuration());
 
-                    Logger::info("Player {} got SpeedBoost {} => speed: {} -> {}",
-                                 playerPtr->getId(), boost->getId(),
-                                 oldSpeed, newSpeed);
+                    Logger::debug("Player {} picked up SpeedBoost {} => speed: {} * {} for {} seconds",
+                                  playerId, boost->getId(),
+                                  playerPtr->getSpeed() / boost->getMultiplier(),
+                                  boost->getMultiplier(),
+                                  boost->getDuration());
 
                     toRemove.push_back(i);
                 }

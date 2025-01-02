@@ -17,7 +17,7 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
         for (int i = 1; i <= frameCount; i++)
         {
             std::string key = "p" + std::to_string(playerNum) + "_" + directory + "_" + std::to_string(i);
-            std::string path = "players/player" + std::to_string(playerNum  + 1) + "/" + directory + "/a" + std::to_string(i) + ".png";
+            std::string path = "players/player" + std::to_string(playerNum + 1) + "/" + directory + "/a" + std::to_string(i) + ".png";
 
             try
             {
@@ -69,4 +69,24 @@ std::unique_ptr<Food> EntityFactory::createFood(float x, float y, float mass)
     loadTexture("food", 8);
 
     return food;
+}
+
+std::unique_ptr<SpeedBoost> EntityFactory::createSpeedBoost(float x, float y)
+{
+    auto &rm = ResourceManager::getInstance();
+    auto speedBoost = std::make_unique<SpeedBoost>();
+
+    speedBoost->setPosition(x, y);
+
+    try
+    {
+        auto texture = rm.acquire<sf::Texture>("power-up", "items/power-up.png");
+        speedBoost->setTexture(texture);
+    }
+    catch (const std::exception &e)
+    {
+        Logger::error("EntityFactory: Failed to load texture - {}", e.what());
+    }
+
+    return speedBoost;
 }

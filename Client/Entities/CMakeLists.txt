@@ -1,6 +1,7 @@
 add_library(ClientEntities
     Player.cpp
     Food.cpp
+    SpeedBoost.cpp
     EntityFactory.cpp
 )
 

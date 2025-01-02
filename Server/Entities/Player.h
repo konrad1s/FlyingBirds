@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <vector>
 #include "Entity.h"
 #include "Speed.h"
 
@@ -20,7 +21,21 @@ public:
 
     void update(float deltaTime, float xBoundary, float yBoundary) override;
 
+    void applySpeedBoost(float multiplier, float duration);
+    void updateSpeedBoosts(float deltaTime);
+
 private:
     float angle;
     Components::Speed speed;
+
+    struct ActiveSpeedBoost
+    {
+        float multiplier;
+        float remainingDuration;
+
+        ActiveSpeedBoost(float m, float d)
+            : multiplier(m), remainingDuration(d) {}
+    };
+
+    std::vector<ActiveSpeedBoost> activeSpeedBoosts;
 };

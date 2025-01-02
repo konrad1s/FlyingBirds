@@ -1,7 +1,11 @@
 #include "Player.h"
+#include <algorithm>
+#include <cmath>
+#include "Logger.h"
 
-Player::Player(uint32_t id, float x = 0.f, float y = 0.f, float initialMass = 5000.f, float speedVal = 100.f)
-    : Entity(id, EntityType::Player, x, y, initialMass), angle(0.f)
+Player::Player(uint32_t id, float x, float y, float initialMass, float speedVal)
+    : Entity(id, EntityType::Player, x, y, initialMass),
+      angle(0.f)
 {
     speed.value = speedVal;
 }
@@ -33,6 +37,8 @@ void Player::addMass(float m)
 
 void Player::update(float deltaTime, float xBoundary, float yBoundary)
 {
+    updateSpeedBoosts(deltaTime);
+
     float dx = std::cos(angle) * speed.value * deltaTime;
     float dy = std::sin(angle) * speed.value * deltaTime;
 
@@ -44,4 +50,28 @@ void Player::update(float deltaTime, float xBoundary, float yBoundary)
 
     position.coords.x = newX;
     position.coords.y = newY;
+}
+
+void Player::applySpeedBoost(float multiplier, float duration)
+{
+    speed.value *= multiplier;
+
+    activeSpeedBoosts.emplace_back(multiplier, duration);
+}
+
+void Player::updateSpeedBoosts(float deltaTime)
+{
+    for (auto it = activeSpeedBoosts.begin(); it != activeSpeedBoosts.end();)
+    {
+        it->remainingDuration -= deltaTime;
+        if (it->remainingDuration <= 0.f)
+        {
+            speed.value /= it->multiplier;
+            it = activeSpeedBoosts.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }

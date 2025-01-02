@@ -3,14 +3,7 @@
 #include <cstdint>
 #include "Position.h"
 #include "Mass.h"
-
-enum class EntityType
-{
-    Unknown = 0,
-    Player = 1,
-    Food = 2,
-    SpeedBoost = 3
-};
+#include "EntityType.h"
 
 class Entity
 {
