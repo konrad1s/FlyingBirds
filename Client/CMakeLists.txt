@@ -11,6 +11,7 @@ set(CLIENT_SOURCES
 add_subdirectory(Entities)
 add_subdirectory(Components)
 add_subdirectory(Systems)
+add_subdirectory(HUD)
 
 add_executable(client
     ${CLIENT_SOURCES}
@@ -18,7 +19,7 @@ add_executable(client
 
 target_include_directories(client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(client PUBLIC
-    ClientEntities ClientComponents ClientSystems
+    ClientEntities ClientComponents ClientSystems ClientHUDs
     Shared
     proto_generated
     sfml-system sfml-network sfml-graphics sfml-window
