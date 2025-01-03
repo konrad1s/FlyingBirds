@@ -10,5 +10,5 @@ public:
     {
     }
 
-    void update(float deltaTime, float xBoundary, float yBoundary) override {}
+    void update(float deltaTime) override {}
 };

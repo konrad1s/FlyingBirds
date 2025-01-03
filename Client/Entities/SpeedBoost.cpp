@@ -6,7 +6,7 @@ void SpeedBoost::update(float deltaTime)
 
 void SpeedBoost::render(sf::RenderWindow &window)
 {
-    float diameter = 30.f;
+    float diameter = 22.f;
 
     sf::FloatRect localBounds = sprite.sprite.getLocalBounds();
 

@@ -19,7 +19,7 @@ public:
 
     void addMass(float m);
 
-    void update(float deltaTime, float xBoundary, float yBoundary) override;
+    void update(float deltaTime) override;
 
     void applySpeedBoost(float multiplier, float duration);
     void updateSpeedBoosts(float deltaTime);

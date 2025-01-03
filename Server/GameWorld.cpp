@@ -20,9 +20,12 @@ GameWorld::GameWorld()
 
 void GameWorld::addPlayer(uint32_t id)
 {
-    std::uniform_real_distribution<float> dist(0.f, ConfigServer::worldSize);
+    std::uniform_real_distribution<float> xPos(ConfigServer::xWorldMargin,
+                                               ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
+    std::uniform_real_distribution<float> yPos(ConfigServer::yWorldMargin,
+                                               ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
 
-    auto player = std::make_unique<Player>(id, dist(rng), dist(rng), 5000.f, 120.f);
+    auto player = std::make_unique<Player>(id, xPos(rng), yPos(rng), 2500.f, 100.f);
 
     players[id] = std::move(player);
     Logger::info("Added player {} to the game at position ({}, {}).",

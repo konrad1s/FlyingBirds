@@ -25,7 +25,7 @@ public:
     void setMass(float m) { mass.setValue(m); }
     float getRadius() const { return mass.getRadius(); }
 
-    virtual void update(float deltaTime, float xBoundary, float yBoundary) {}
+    virtual void update(float deltaTime) {}
 
 protected:
     Entity(uint32_t _id, EntityType _type, float x, float y, float massValue)

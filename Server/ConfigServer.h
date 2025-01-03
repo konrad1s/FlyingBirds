@@ -14,7 +14,11 @@ namespace ConfigServer
     };
 
     constexpr int port = 5000;
-    constexpr float worldSize = 800.0f;
+
+    constexpr float xWorldSize = 720.0f;
+    constexpr float xWorldMargin = 20.0f;
+    constexpr float yWorldSize = 720.0f;
+    constexpr float yWorldMargin = 20.0f;
 
     const std::vector<EntitySpawnConfig> entitySpawnConfigs =
         {

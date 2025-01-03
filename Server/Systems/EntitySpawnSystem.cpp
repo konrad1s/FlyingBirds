@@ -38,15 +38,18 @@ void EntitySpawnSystem::update(GameWorld &world, float deltaTime)
         {
             int toSpawn = tracker.config.minCount - currentCount;
 
-            std::uniform_real_distribution<float> posDist(0.f, ConfigServer::worldSize);
-            std::uniform_real_distribution<float> massDist(400.f, 1200.f);
+            std::uniform_real_distribution<float> xPos(ConfigServer::xWorldMargin,
+                                                       ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
+            std::uniform_real_distribution<float> yPos(ConfigServer::yWorldMargin,
+                                                       ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
+            std::uniform_real_distribution<float> massDist(300.f, 600.f);
             std::mt19937 &rng = world.getRNG();
 
             for (int i = 0; i < toSpawn; ++i)
             {
                 uint32_t uniqueId = entityId++;
-                float x = posDist(rng);
-                float y = posDist(rng);
+                float x = xPos(rng);
+                float y = yPos(rng);
                 float mass = 0.f;
 
                 std::unique_ptr<Entity> newEntity;

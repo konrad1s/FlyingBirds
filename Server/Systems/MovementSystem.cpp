@@ -7,6 +7,6 @@ void MovementSystem::update(GameWorld &world, float deltaTime)
 {
     for (auto &[id, playerPtr] : world.getPlayers())
     {
-        playerPtr->update(deltaTime, ConfigServer::worldSize, ConfigServer::worldSize);
+        playerPtr->update(deltaTime);
     }
 }

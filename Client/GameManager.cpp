@@ -3,7 +3,7 @@
 #include "Logger.h"
 #include "Systems.h"
 
-GameManager::GameManager() : window(sf::VideoMode(850, 850), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning(false)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)
@@ -108,7 +108,7 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     if (!evt.message.entities().empty())
     {
-        world = std::make_unique<GameWorld>(850, 850);
+        world = std::make_unique<GameWorld>(1280, 720);
 
         auto &player = evt.message.entities().Get(0);
 

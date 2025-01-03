@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include "Logger.h"
+#include "ConfigServer.h"
 
 Player::Player(uint32_t id, float x, float y, float initialMass, float speedVal)
     : Entity(id, EntityType::Player, x, y, initialMass),
@@ -35,7 +36,7 @@ void Player::addMass(float m)
     mass.addMass(m);
 }
 
-void Player::update(float deltaTime, float xBoundary, float yBoundary)
+void Player::update(float deltaTime)
 {
     updateSpeedBoosts(deltaTime);
 
@@ -45,8 +46,8 @@ void Player::update(float deltaTime, float xBoundary, float yBoundary)
     float newX = position.coords.x + dx;
     float newY = position.coords.y + dy;
 
-    newX = std::clamp(newX, 0.f, xBoundary);
-    newY = std::clamp(newY, 0.f, yBoundary);
+    newX = std::clamp(newX, ConfigServer::xWorldMargin, ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
+    newY = std::clamp(newY, ConfigServer::yWorldMargin, ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
 
     position.coords.x = newX;
     position.coords.y = newY;
