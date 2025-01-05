@@ -20,10 +20,12 @@ public:
 
     Components::Animation &getAnimation();
     void setTexture(const std::shared_ptr<sf::Texture> &texture);
+    const std::shared_ptr<sf::Texture> &getTexture() const;
 
 private:
     Components::Mass mass;
     Components::Animation animation;
+    std::shared_ptr<sf::Texture> defaultTexture;
 
     float speed{100.f};
     float lastX;

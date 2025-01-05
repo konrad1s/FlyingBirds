@@ -1,5 +1,6 @@
 add_library(ClientHUDs
     MenuHUD.cpp
+    InGameHUD.cpp
 )
 
 target_include_directories(ClientHUDs PUBLIC
@@ -8,7 +9,7 @@ target_include_directories(ClientHUDs PUBLIC
 )
 
 target_link_libraries(ClientHUDs PRIVATE
-    client
+    client ClientEntities ClientComponents
     Shared
     sfml-graphics sfml-window sfml-system
 )

@@ -67,10 +67,10 @@ Components::Animation &Player::getAnimation()
 
 void Player::setTexture(const std::shared_ptr<sf::Texture> &texture)
 {
-    if (texture)
-    {
-        sprite.sprite.setTexture(*texture, true);
-        sf::FloatRect bounds = sprite.sprite.getLocalBounds();
-        sprite.sprite.setOrigin(bounds.width * 0.5f, bounds.height * 0.5f);
-    }
+    defaultTexture = texture;
+}
+
+const std::shared_ptr<sf::Texture> &Player::getTexture() const
+{
+    return defaultTexture;
 }
