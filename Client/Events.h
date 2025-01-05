@@ -18,4 +18,11 @@ namespace Events
     {
         network::ServerToClient message;
     };
+
+    struct PlayButtonClickEvent
+    {
+        std::string ip;
+        unsigned short port;
+        std::string nickname;
+    };
 } // namespace Events

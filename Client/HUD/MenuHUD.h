@@ -2,15 +2,17 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "HUDBase.h"
 #include "EventBus.h"
 
-class MenuHUD
+class MenuHUD : public HUDBase
 {
 public:
     MenuHUD(sf::RenderWindow &window, EventBus &eventBus);
-    void handleEvent(sf::RenderWindow &window, const sf::Event &event);
-    void update(float deltaTime);
-    void render(sf::RenderWindow &window);
+    ~MenuHUD() override = default;
+    void handleEvent(sf::RenderWindow &window, const sf::Event &event) override;
+    void update(float deltaTime) override;
+    void render(sf::RenderWindow &window) override;
 
 private:
     void initializeHud(sf::RenderWindow &window);

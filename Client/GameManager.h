@@ -9,6 +9,7 @@
 #include "Events.h"
 #include "MenuHUD.h"
 #include "InGameHUD.h"
+#include "HUDManager.h"
 
 class GameManager
 {
@@ -27,7 +28,7 @@ private:
     void onPlayButtonClicked(const std::string &ip, unsigned short port, const std::string &nick);
 
 private:
-    bool isRunning;
+    bool isRunning{false};
     EventBus eventBus;
     sf::RenderWindow window;
     std::thread renderThread;
@@ -42,6 +43,5 @@ private:
     sf::View gameView;
     sf::View hudView;
 
-    MenuHUD menuHud;
-    InGameHUD inGameHud;
+    HUDManager hudManager;
 };

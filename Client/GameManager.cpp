@@ -3,7 +3,8 @@
 #include "Logger.h"
 #include "Systems.h"
 
-GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning(false), menuHud(window, eventBus), inGameHud(window)
+GameManager::GameManager()
+    : window(sf::VideoMode(1280, 720), "Game"), menuHud(window, eventBus), inGameHud(window), hudManager(window, eventBus)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)
@@ -48,11 +49,10 @@ GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning
     }
 
     gameView.reset(sf::FloatRect(0.f, 0.f, 720.f, 720.f));
-    gameView.setViewport(sf::FloatRect(0.f, 0.f, 720.f / 1280.f, 1.f)); // Left side
+    gameView.setViewport(sf::FloatRect(0.f, 0.f, 720.f / 1280.f, 1.f));
 
-    // HUDView: Right side (560x720)
     hudView.reset(sf::FloatRect(0.f, 0.f, 560.f, 720.f));
-    hudView.setViewport(sf::FloatRect(720.f / 1280.f, 0.f, 560.f / 1280.f, 1.f)); // Right side
+    hudView.setViewport(sf::FloatRect(720.f / 1280.f, 0.f, 560.f / 1280.f, 1.f));
 }
 
 GameManager::~GameManager()
@@ -91,8 +91,7 @@ void GameManager::handleEvents()
             isRunning = false;
         }
 
-        menuHud.handleEvent(window, event);
-        inGameHud.handleEvent(window,event);
+        hudManager.handleEvent(event);
     }
 }
 
@@ -108,17 +107,18 @@ void GameManager::renderLoop()
         window.draw(background);
         {
             std::lock_guard<std::mutex> lock(entityMutex);
+
             if (world)
             {
                 window.setView(gameView);
                 world->render(window);
 
                 window.setView(hudView);
-                inGameHud.render(window);
+                hudManager.render();
             }
             else
             {
-                menuHud.render(window);
+                hudManager.render();
             }
         }
 
@@ -144,13 +144,15 @@ void GameManager::updateLoop()
             {
                 world->update(deltaTime);
                 movementSystem.update(*world, deltaTime);
-                inGameHud.update(*world, deltaTime);
+                hudManager.update(*world, deltaTime);
+            }
+            else
+            {
+                hudManager.update(deltaTime);
             }
         }
 
-        menuHud.update(deltaTime);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
@@ -188,6 +190,7 @@ void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port
     {
         client = std::make_unique<Client>(sf::IpAddress(ip), port, eventBus);
         client->start();
+        hudManager.setState(HUDManager::State::InGame);
     }
     else
     {

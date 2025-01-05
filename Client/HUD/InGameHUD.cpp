@@ -100,13 +100,6 @@ void InGameHUD::update(GameWorld &world, float deltaTime)
             info.scoreText.setFillColor(sf::Color::Black);
             info.scoreText.setPosition(START_X, 100.f + VERTICAL_SPACING * playerInfos.size());
 
-            // Setup Health Text
-            info.healthText.setFont(*font);
-            info.healthText.setString("Health: 65"); /* Currently not used */
-            info.healthText.setCharacterSize(28);
-            info.healthText.setFillColor(sf::Color::Black);
-            info.healthText.setPosition(START_X + 200.f, 100.f + VERTICAL_SPACING * playerInfos.size());
-
             // Setup Player Skin Sprite
             std::shared_ptr<sf::Texture> playerTexture = playerPtr->getTexture();
             if (playerTexture)
@@ -126,10 +119,9 @@ void InGameHUD::update(GameWorld &world, float deltaTime)
             auto &info = playerInfos[playerId];
             Player* playerPtrNonConst = const_cast<Player*>(playerPtr.get());
 
-            // Update Nickname, Score, and Health
+            // Update Nickname, Score
             info.nicknameText.setString("Konrad"); /* currently not used */
             info.scoreText.setString("Score: " + std::to_string(static_cast<int>(playerPtr->getMass())));
-            // info.healthText.setString("Health: " + std::to_string(playerPtr->getHealth()));
 
             std::shared_ptr<sf::Texture> playerTexture = playerPtr->getTexture();
             if (playerTexture && info.playerSkinSprite.getTexture() != playerTexture.get())
@@ -156,7 +148,6 @@ void InGameHUD::render(sf::RenderWindow &window)
         window.draw(info.boardSprite);    
         window.draw(info.nicknameText);
         window.draw(info.scoreText);
-        window.draw(info.healthText);
         window.draw(info.playerSkinSprite);     
     }
 }
