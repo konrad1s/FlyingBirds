@@ -4,7 +4,7 @@
 #include "Systems.h"
 
 GameManager::GameManager()
-    : window(sf::VideoMode(1280, 720), "Game"), menuHud(window, eventBus), inGameHud(window), hudManager(window, eventBus)
+    : window(sf::VideoMode(1280, 720), "Game"), hudManager(window, eventBus)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)

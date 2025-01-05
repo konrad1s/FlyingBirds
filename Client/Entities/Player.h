@@ -23,7 +23,9 @@ public:
     const std::shared_ptr<sf::Texture> &getTexture() const;
 
     void setProtection(bool enabled);
+    bool isProtectionActive() const {return protectionEnabled;}
     void setSpeedBoost(bool enabled);
+    bool isSpeedBoostActive() const { return speedBoostEnabled; }
 
 private:
     Components::Mass mass;
