@@ -18,20 +18,7 @@ void Food::render(sf::RenderWindow &window)
     float radius = mass.getRadius();
     float diameter = 2.f * radius;
 
-    sf::FloatRect localBounds = sprite.sprite.getLocalBounds();
-
-    sprite.sprite.setOrigin(localBounds.width * 0.5f, localBounds.height * 0.5f);
-
-    if (localBounds.width > 0.f && localBounds.height > 0.f)
-    {
-        float scaleX = diameter / localBounds.width;
-        float scaleY = diameter / localBounds.height;
-        sprite.sprite.setScale(scaleX, scaleY);
-    }
-    else
-    {
-        sprite.sprite.setScale(1.f, 1.f);
-    }
+    scaleSpriteToDiameter(diameter);
 
     sprite.sprite.setPosition(transform.x, transform.y);
     window.draw(sprite.sprite);

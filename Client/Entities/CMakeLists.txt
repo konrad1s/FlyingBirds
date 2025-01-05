@@ -3,6 +3,7 @@ add_library(ClientEntities
     Food.cpp
     SpeedBoost.cpp
     EntityFactory.cpp
+    Protection.cpp
 )
 
 target_include_directories(ClientEntities PUBLIC

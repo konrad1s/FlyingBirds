@@ -21,6 +21,24 @@ public:
     }
 
 protected:
+    void scaleSpriteToDiameter(float diameter)
+    {
+        sf::FloatRect localBounds = sprite.sprite.getLocalBounds();
+        sprite.sprite.setOrigin(localBounds.width * 0.5f, localBounds.height * 0.5f);
+
+        if (localBounds.width > 0.f && localBounds.height > 0.f)
+        {
+            float scaleX = diameter / localBounds.width;
+            float scaleY = diameter / localBounds.height;
+            sprite.sprite.setScale(scaleX, scaleY);
+        }
+        else
+        {
+            sprite.sprite.setScale(1.f, 1.f);
+        }
+    }
+
+protected:
     Components::Sprite sprite;
     Components::Transform transform;
 };

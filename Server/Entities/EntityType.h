@@ -5,4 +5,5 @@ enum class EntityType
     Player,
     Food,
     SpeedBoost,
+    Protection,
 };

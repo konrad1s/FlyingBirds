@@ -157,15 +157,17 @@ void GameManager::broadcastGameState()
     auto s2c = envelope.mutable_s2c();
     s2c->set_type(ServerToClient::STATE_UPDATE);
 
-    for (auto &kv : gameWorld.getPlayers())
+    for (auto& [id, playerPtr] : gameWorld.getPlayers())
     {
-        Player *playerPtr = kv.second.get();
-        auto netEnt = s2c->add_entities();
-
+        ServerToClient::Entity* netEnt = s2c->add_entities();
         netEnt->set_id(playerPtr->getId());
         netEnt->mutable_position()->set_x(playerPtr->getX());
         netEnt->mutable_position()->set_y(playerPtr->getY());
+        
+        netEnt->set_speedboostactive(playerPtr->isSpeedBoostActive());
+        netEnt->set_protectionactive(playerPtr->isShieldActive());
         netEnt->set_mass(playerPtr->getMass());
+
         netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
     }
 
@@ -185,6 +187,9 @@ void GameManager::broadcastGameState()
             break;
         case EntityType::SpeedBoost:
             netEnt->set_entitytype(ServerToClient::Entity::SPEEDBOOST);
+            break;
+        case EntityType::Protection:
+            netEnt->set_entitytype(ServerToClient::Entity::PROTECTION);
             break;
         default:
             netEnt->set_entitytype(ServerToClient::Entity::UNKNOWN);

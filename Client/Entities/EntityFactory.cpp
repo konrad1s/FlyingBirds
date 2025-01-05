@@ -23,6 +23,11 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
             {
                 auto texture = rm.acquire<sf::Texture>(key, path);
                 player->getAnimation().addFrame(texture);
+
+                if (i == 1)
+                {
+                    player->setTexture(texture);
+                }
             }
             catch (const std::exception &e)
             {
@@ -32,7 +37,6 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
     };
 
     loadTexture(playerAssetId, "flying", 8);
-
     playerAssetId = (playerAssetId + 1) % 5;
 
     return player;
@@ -89,4 +93,24 @@ std::unique_ptr<SpeedBoost> EntityFactory::createSpeedBoost(float x, float y)
     }
 
     return speedBoost;
+}
+
+std::unique_ptr<Protection> EntityFactory::createProtection(float x, float y)
+{
+    auto &rm = ResourceManager::getInstance();
+    auto protection = std::make_unique<Protection>();
+
+    protection->setPosition(x, y);
+
+    try
+    {
+        auto texture = rm.acquire<sf::Texture>("protection", "items/protection.png");
+        protection->setTexture(texture);
+    }
+    catch (const std::exception &e)
+    {
+        Logger::error("EntityFactory: Failed to load texture - {}", e.what());
+    }
+
+    return protection;
 }

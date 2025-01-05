@@ -2,6 +2,7 @@
 #include "GameWorld.h"
 #include "Food.h"
 #include "SpeedBoost.h"
+#include "Protection.h"
 #include "Logger.h"
 #include "ConfigServer.h"
 #include <random>
@@ -62,6 +63,9 @@ void EntitySpawnSystem::update(GameWorld &world, float deltaTime)
                     break;
                 case EntityType::SpeedBoost:
                     newEntity = std::make_unique<SpeedBoost>(uniqueId, x, y);
+                    break;
+                case EntityType::Protection:
+                    newEntity = std::make_unique<Protection>(uniqueId, x, y, 5.f);
                     break;
                 default:
                     Logger::warning("EntitySpawnSystem: Unknown EntityType {}", static_cast<int>(tracker.config.type));

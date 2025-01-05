@@ -54,12 +54,16 @@ message ServerToClient
             PLAYER     = 1;
             FOOD       = 2;
             SPEEDBOOST = 3;
+            PROTECTION = 4;
         }
 
         uint32 id   = 1;
         Vector2 position = 2;
-        float mass  = 3;
+        optional float mass  = 3;
         EntityType entityType = 4;
+
+        optional bool speedBoostActive = 5;
+        optional bool protectionActive = 6;
     }
 
     repeated Entity entities = 2;

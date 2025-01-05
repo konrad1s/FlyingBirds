@@ -6,32 +6,6 @@
 #include <exception>
 #include <cmath>
 
-GameWorld::GameWorld(int windowSizeX, int windowSizeY)
-{
-    try
-    {
-        auto &resMgr = ResourceManager::getInstance();
-        backgroundTexture = resMgr.acquire<sf::Texture>("background", "backgrounds/background.png");
-
-        background.setTexture(*backgroundTexture);
-        background.setPosition(0.f, 0.f);
-
-        auto textureSize = backgroundTexture->getSize();
-        float scaleX = static_cast<float>(windowSizeX) / static_cast<float>(textureSize.x);
-        float scaleY = static_cast<float>(windowSizeY) / static_cast<float>(textureSize.y);
-        float scale  = std::min(scaleX, scaleY);
-        background.setScale(scale, scale);
-
-        float posX = (windowSizeX - textureSize.x * scale) * 0.5f;
-        float posY = (windowSizeY - textureSize.y * scale) * 0.5f;
-        background.setPosition(posX, posY);
-    }
-    catch (const std::exception &e)
-    {
-        Logger::error("Failed to load background: {}", e.what());
-    }
-}
-
 void GameWorld::update(float dt)
 {
     for (auto &[id, playerPtr] : players)
@@ -47,8 +21,6 @@ void GameWorld::update(float dt)
 
 void GameWorld::render(sf::RenderWindow &window)
 {
-    window.draw(background);
-
     /* Draw all players */
     for (auto &[id, playerPtr] : players)
     {
@@ -80,13 +52,36 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
             auto it = players.find(entId);
             if (it == players.end())
             {
-                auto newPlayer = factory.createPlayer(ent.position().x(), ent.position().y(), ent.mass());
+                auto newPlayer = factory.createPlayer(
+                    ent.position().x(),
+                    ent.position().y(),
+                    ent.has_mass() ? ent.mass() : 0.f
+                );
+                if (ent.has_speedboostactive())
+                {
+                    newPlayer->setSpeedBoost(ent.speedboostactive());
+                }
+                if (ent.has_protectionactive())
+                {
+                    newPlayer->setProtection(ent.protectionactive());
+                }
                 players.emplace(entId, std::move(newPlayer));
             }
             else
             {
                 it->second->setPosition(ent.position().x(), ent.position().y());
-                it->second->setMass(ent.mass());
+                if (ent.has_mass())
+                {
+                    it->second->setMass(ent.mass());
+                }
+                if (ent.has_speedboostactive())
+                {
+                    it->second->setSpeedBoost(ent.speedboostactive());
+                }
+                if (ent.has_protectionactive())
+                {
+                    it->second->setProtection(ent.protectionactive());
+                }
             }
         }
         else
@@ -108,6 +103,12 @@ void GameWorld::updateFromServer(const network::ServerToClient &message)
                 case network::ServerToClient::Entity::SPEEDBOOST:
                 {
                     auto newBoost = factory.createSpeedBoost(ent.position().x(), ent.position().y());
+                    entities.emplace(entId, std::move(newBoost));
+                    break;
+                }
+                case network::ServerToClient::Entity::PROTECTION:
+                {
+                    auto newBoost = factory.createProtection(ent.position().x(), ent.position().y());
                     entities.emplace(entId, std::move(newBoost));
                     break;
                 }

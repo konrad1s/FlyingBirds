@@ -11,7 +11,7 @@
 class GameWorld
 {
 public:
-    GameWorld(int windowSizeX, int windowSizeY);
+    GameWorld() = default;
 
     void update(float dt);
     void render(sf::RenderWindow &window);
@@ -31,7 +31,4 @@ private:
 
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::unordered_map<uint32_t, std::unique_ptr<Entity>> entities;
-
-    sf::Sprite background;
-    std::shared_ptr<sf::Texture> backgroundTexture;
 };

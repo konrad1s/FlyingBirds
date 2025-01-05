@@ -1,10 +1,10 @@
-#include "SpeedBoost.h"
+#include "Protection.h"
 
-void SpeedBoost::update(float deltaTime)
+void Protection::update(float deltaTime)
 {
 }
 
-void SpeedBoost::render(sf::RenderWindow& window)
+void Protection::render(sf::RenderWindow& window)
 {
     float diameter = 22.f;
     scaleSpriteToDiameter(diameter);
@@ -13,7 +13,7 @@ void SpeedBoost::render(sf::RenderWindow& window)
     window.draw(sprite.sprite);
 }
 
-void SpeedBoost::setTexture(const std::shared_ptr<sf::Texture>& text)
+void Protection::setTexture(const std::shared_ptr<sf::Texture>& text)
 {
     if (text)
     {

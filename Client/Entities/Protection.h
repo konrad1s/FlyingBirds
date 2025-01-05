@@ -6,10 +6,10 @@
 #include "Entity.h"
 #include "Sprite.h"
 
-class SpeedBoost : public Entity
+class Protection : public Entity
 {
 public:
-    SpeedBoost() = default;
+    Protection() = default;
 
     void update(float deltaTime) override;
     void render(sf::RenderWindow &window) override;

@@ -21,8 +21,9 @@ namespace ConfigServer
     constexpr float yWorldMargin = 20.0f;
 
     const std::vector<EntitySpawnConfig> entitySpawnConfigs =
-        {
-            {EntityType::Food, 5.f, 10},
-            {EntityType::SpeedBoost, 10.f, 3}
-        };
+    {
+        {EntityType::Food,       5.f,  10},
+        {EntityType::SpeedBoost, 10.f, 3},
+        {EntityType::Protection, 15.f, 2}
+    };
 }

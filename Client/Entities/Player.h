@@ -22,11 +22,16 @@ public:
     void setTexture(const std::shared_ptr<sf::Texture> &texture);
     const std::shared_ptr<sf::Texture> &getTexture() const;
 
+    void setProtection(bool enabled);
+    void setSpeedBoost(bool enabled);
+
 private:
     Components::Mass mass;
     Components::Animation animation;
     std::shared_ptr<sf::Texture> defaultTexture;
 
+    bool protectionEnabled{false};
+    bool speedBoostEnabled{false};
     float speed{100.f};
-    float lastX;
+    float lastX{0.f};
 };

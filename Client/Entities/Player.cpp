@@ -20,20 +20,7 @@ void Player::render(sf::RenderWindow &window)
     float radius = mass.getRadius();
     float diameter = 2.f * radius;
 
-    sf::FloatRect localBounds = sprite.sprite.getLocalBounds();
-
-    sprite.sprite.setOrigin(localBounds.width * 0.5f, localBounds.height * 0.5f);
-
-    if (localBounds.width > 0.f && localBounds.height > 0.f)
-    {
-        float scaleX = diameter / localBounds.width;
-        float scaleY = diameter / localBounds.height;
-        sprite.sprite.setScale(scaleX, scaleY);
-    }
-    else
-    {
-        sprite.sprite.setScale(1.f, 1.f);
-    }
+    scaleSpriteToDiameter(diameter);
 
     if (transform.x < lastX)
     {
@@ -45,6 +32,15 @@ void Player::render(sf::RenderWindow &window)
     }
 
     sprite.sprite.setPosition(transform.x, transform.y);
+
+    if (protectionEnabled) 
+    {
+        sf::Sprite glowSprite = sprite.sprite;
+        glowSprite.setColor(sf::Color(255, 255, 0));
+        glowSprite.setScale(glowSprite.getScale() * 1.3f);
+        window.draw(glowSprite, sf::BlendAdd);
+    }
+
     window.draw(sprite.sprite);
 
     lastX = transform.x;
@@ -73,4 +69,14 @@ void Player::setTexture(const std::shared_ptr<sf::Texture> &texture)
 const std::shared_ptr<sf::Texture> &Player::getTexture() const
 {
     return defaultTexture;
+}
+
+void Player::setProtection(bool enabled)
+{
+    protectionEnabled = enabled;
+}
+
+void Player::setSpeedBoost(bool enabled)
+{
+    speedBoostEnabled = enabled;
 }

@@ -3,7 +3,7 @@
 #include "Logger.h"
 #include "Systems.h"
 
-GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning(false)
+GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning(false), menuHud(window, eventBus), inGameHud(window)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)
@@ -16,6 +16,43 @@ GameManager::GameManager() : window(sf::VideoMode(1280, 720), "Game"), isRunning
         {
             this->onServerDataUpdate(evt);
         });
+
+    eventBus.subscribe<Events::PlayButtonClickEvent>(
+        [this](const Events::PlayButtonClickEvent &evt)
+        {
+            this->onPlayButtonClicked(evt.ip, evt.port, evt.nickname);
+        });
+
+    try
+    {
+        auto &resMgr = ResourceManager::getInstance();
+        backgroundTexture = resMgr.acquire<sf::Texture>("background", "backgrounds/background.png");
+
+        background.setTexture(*backgroundTexture);
+        background.setPosition(0.f, 0.f);
+
+        auto textureSize = backgroundTexture->getSize();
+        float scaleX = static_cast<float>(1280) / static_cast<float>(textureSize.x);
+        float scaleY = static_cast<float>(720) / static_cast<float>(textureSize.y);
+        float scale  = std::min(scaleX, scaleY);
+        background.setScale(scale, scale);
+
+        float posX = (1280 - textureSize.x * scale) * 0.5f;
+        float posY = (720 - textureSize.y * scale) * 0.5f;
+        background.setPosition(posX, posY);
+
+    }
+    catch (const std::exception &e)
+    {
+        Logger::error("Failed to load background: {}", e.what());
+    }
+
+    gameView.reset(sf::FloatRect(0.f, 0.f, 720.f, 720.f));
+    gameView.setViewport(sf::FloatRect(0.f, 0.f, 720.f / 1280.f, 1.f)); // Left side
+
+    // HUDView: Right side (560x720)
+    hudView.reset(sf::FloatRect(0.f, 0.f, 560.f, 720.f));
+    hudView.setViewport(sf::FloatRect(720.f / 1280.f, 0.f, 560.f / 1280.f, 1.f)); // Right side
 }
 
 GameManager::~GameManager()
@@ -37,9 +74,6 @@ void GameManager::run()
     renderThread = std::thread(&GameManager::renderLoop, this);
     updateThread = std::thread(&GameManager::updateLoop, this);
 
-    client = std::make_unique<Client>(sf::IpAddress::LocalHost, 5000, eventBus);
-    client->start();
-
     while (window.isOpen())
     {
         handleEvents();
@@ -56,6 +90,9 @@ void GameManager::handleEvents()
             window.close();
             isRunning = false;
         }
+
+        menuHud.handleEvent(window, event);
+        inGameHud.handleEvent(window,event);
     }
 }
 
@@ -67,11 +104,21 @@ void GameManager::renderLoop()
     {
         window.clear();
 
+        window.setView(window.getDefaultView());
+        window.draw(background);
         {
             std::lock_guard<std::mutex> lock(entityMutex);
             if (world)
             {
+                window.setView(gameView);
                 world->render(window);
+
+                window.setView(hudView);
+                inGameHud.render(window);
+            }
+            else
+            {
+                menuHud.render(window);
             }
         }
 
@@ -97,8 +144,11 @@ void GameManager::updateLoop()
             {
                 world->update(deltaTime);
                 movementSystem.update(*world, deltaTime);
+                inGameHud.update(*world, deltaTime);
             }
         }
+
+        menuHud.update(deltaTime);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -108,7 +158,7 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     if (!evt.message.entities().empty())
     {
-        world = std::make_unique<GameWorld>(1280, 720);
+        world = std::make_unique<GameWorld>();
 
         auto &player = evt.message.entities().Get(0);
 
@@ -129,5 +179,18 @@ void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
         {
             world->updateFromServer(evt.message);
         }
+    }
+}
+
+void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port, const std::string &nick)
+{
+    if (!ip.empty() && port != 0)
+    {
+        client = std::make_unique<Client>(sf::IpAddress(ip), port, eventBus);
+        client->start();
+    }
+    else
+    {
+        Logger::warning("Invalid IP or Port entered.");
     }
 }

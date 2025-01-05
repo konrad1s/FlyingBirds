@@ -36,9 +36,20 @@ void Player::addMass(float m)
     mass.addMass(m);
 }
 
+bool Player::isShieldActive() const
+{
+    return !activeProtections.empty();
+}
+
+bool Player::isSpeedBoostActive() const
+{
+    return !activeSpeedBoosts.empty();
+}
+
 void Player::update(float deltaTime)
 {
     updateSpeedBoosts(deltaTime);
+    updateProtections(deltaTime);
 
     float dx = std::cos(angle) * speed.value * deltaTime;
     float dy = std::sin(angle) * speed.value * deltaTime;
@@ -69,6 +80,27 @@ void Player::updateSpeedBoosts(float deltaTime)
         {
             speed.value /= it->multiplier;
             it = activeSpeedBoosts.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+void Player::applyProtection(float duration)
+{
+    activeProtections.emplace_back(duration);
+}
+
+void Player::updateProtections(float deltaTime)
+{
+    for (auto it = activeProtections.begin(); it != activeProtections.end();)
+    {
+        it->remainingDuration -= deltaTime;
+        if (it->remainingDuration <= 0.f)
+        {
+            it = activeProtections.erase(it);
         }
         else
         {
