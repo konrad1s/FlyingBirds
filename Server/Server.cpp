@@ -42,9 +42,6 @@ void Server::acceptNewClients()
         ClientId assignedId = nextClientId++;
         clients[assignedId] = std::move(newClient);
 
-        Events::ClientConnectedEvent event{assignedId};
-        eventBus.publish(event);
-
         Logger::info("New client connected with ID: {}", assignedId);
     }
 }
@@ -78,7 +75,7 @@ void Server::receiveFromClient(ClientId clientId)
             break;
             case network::ClientToServer::JOIN:
             {
-                Events::ClientConnectedEvent event{clientId};
+                Events::ClientConnectedEvent event{clientId, std::move(envelope.c2s().nickname())};
                 eventBus.publish<Events::ClientConnectedEvent>(event);
             }
             break;

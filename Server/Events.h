@@ -7,6 +7,10 @@ namespace Events
     struct ClientConnectedEvent
     {
         uint32_t clientId;
+        std::string nickname;
+
+        ClientConnectedEvent(uint32_t id, const std::string&& nick)
+            : clientId(id), nickname(std::move(nick)) {}
     };
 
     struct ClientDisconnectedEvent

@@ -160,6 +160,7 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     if (!evt.message.entities().empty())
     {
+        hudManager.setState(HUDManager::State::InGame);
         world = std::make_unique<GameWorld>();
 
         auto &player = evt.message.entities().Get(0);
@@ -189,8 +190,13 @@ void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port
     if (!ip.empty() && port != 0)
     {
         client = std::make_unique<Client>(sf::IpAddress(ip), port, eventBus);
-        client->start();
-        hudManager.setState(HUDManager::State::InGame);
+        if (0 == client->start())
+        {
+            network::ClientToServer joinMsg;
+            joinMsg.set_type(network::ClientToServer::JOIN);
+            joinMsg.set_nickname(nick);
+            client->sendToServer(joinMsg);
+        }
     }
     else
     {

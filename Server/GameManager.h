@@ -34,7 +34,7 @@ private:
     void handlePrompt();
     void checkPrompt();
 
-    void onClientConnected(uint32_t clientId);
+    void onClientConnected(uint32_t clientId, const std::string &nickname);
     void onClientDisconnected(uint32_t clientId);
     void onClientMessage(uint32_t clientId, const network::ClientToServer &msg);
     void sendWelcomeToClient(uint32_t clientId);

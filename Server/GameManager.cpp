@@ -12,7 +12,7 @@ GameManager::GameManager()
     eventBus.subscribe<Events::ClientConnectedEvent>(
         [this](const Events::ClientConnectedEvent &e)
         {
-            this->onClientConnected(e.clientId);
+            this->onClientConnected(e.clientId, e.nickname);
         });
 
     eventBus.subscribe<Events::ClientDataUpdatedEvent>(
@@ -115,11 +115,14 @@ void GameManager::checkPrompt()
     }
 }
 
-void GameManager::onClientConnected(uint32_t clientId)
+void GameManager::onClientConnected(uint32_t clientId, const std::string &nickname)
 {
-    gameWorld.addPlayer(clientId);
-    Logger::info("Player {} connected to the game.", clientId);
-    sendWelcomeToClient(clientId);
+    if (!nickname.empty())
+    {
+        gameWorld.addPlayer(clientId, nickname);
+        Logger::info("Player {} connected to the game.", clientId);
+        sendWelcomeToClient(clientId);
+    }
 }
 
 void GameManager::onClientDisconnected(uint32_t clientId)
@@ -169,6 +172,7 @@ void GameManager::broadcastGameState()
         netEnt->set_mass(playerPtr->getMass());
 
         netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
+        netEnt->set_nickname(playerPtr->getNickname());
     }
 
     for (auto &entityPtr : gameWorld.getEntities())

@@ -3,19 +3,23 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include <string>
 #include "Entity.h"
 #include "Speed.h"
 
 class Player : public Entity
 {
 public:
-    Player(uint32_t id, float x, float y, float initialMass, float speedVal);
+    Player(uint32_t id, float x, float y, float initialMass, float speedVal, const std::string &nick);
 
     float getSpeed() const;
     void setSpeed(float s);
 
     float getAngle() const;
     void setAngle(float a);
+
+    const std::string& getNickname() const;
+    void setNickname(const std::string& nick);
 
     void addMass(float m);
 
@@ -33,6 +37,7 @@ private:
 
 private:
     float angle;
+    std::string nickname;
     Components::Speed speed;
 
     struct ActiveSpeedBoost

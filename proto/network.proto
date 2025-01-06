@@ -32,8 +32,8 @@ message ClientToServer
         QUIT = 2;
     }
     MessageType type = 1;
-
-    float angle = 2;
+    optional string nickname = 2;
+    float angle = 3;
 }
 
 message ServerToClient 
@@ -62,8 +62,9 @@ message ServerToClient
         optional float mass  = 3;
         EntityType entityType = 4;
 
-        optional bool speedBoostActive = 5;
-        optional bool protectionActive = 6;
+        optional string nickname = 5;  
+        optional bool speedBoostActive = 6;
+        optional bool protectionActive = 7;
     }
 
     repeated Entity entities = 2;

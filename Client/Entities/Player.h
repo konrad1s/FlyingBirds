@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "Mass.h"
 #include "Animation.h"
+#include <string>
 
 class Player : public Entity
 {
@@ -18,12 +19,15 @@ public:
     float getMass() const;
     void setMass(float newMass);
 
+    void setNickname(const std::string& nick) { nickname = nick; }
+    const std::string& getNickname() const { return nickname; }
+
     Components::Animation &getAnimation();
     void setTexture(const std::shared_ptr<sf::Texture> &texture);
     const std::shared_ptr<sf::Texture> &getTexture() const;
 
     void setProtection(bool enabled);
-    bool isProtectionActive() const {return protectionEnabled;}
+    bool isProtectionActive() const { return protectionEnabled; }
     void setSpeedBoost(bool enabled);
     bool isSpeedBoostActive() const { return speedBoostEnabled; }
 
@@ -36,4 +40,6 @@ private:
     bool speedBoostEnabled{false};
     float speed{100.f};
     float lastX{0.f};
+
+    std::string nickname; 
 };

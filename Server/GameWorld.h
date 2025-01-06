@@ -15,7 +15,7 @@ class GameWorld
 public:
     GameWorld();
 
-    void addPlayer(uint32_t playerId);
+    void addPlayer(uint32_t id, const std::string &nickname);
     void removePlayer(uint32_t playerId);
     Player *findPlayerById(uint32_t playerId);
 

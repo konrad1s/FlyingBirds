@@ -4,11 +4,12 @@
 #include "Logger.h"
 #include "ConfigServer.h"
 
-Player::Player(uint32_t id, float x, float y, float initialMass, float speedVal)
+Player::Player(uint32_t id, float x, float y, float initialMass, float speedVal, const std::string &nick)
     : Entity(id, EntityType::Player, x, y, initialMass),
       angle(0.f)
 {
     speed.value = speedVal;
+    setNickname(nick);
 }
 
 float Player::getSpeed() const
@@ -29,6 +30,16 @@ float Player::getAngle() const
 void Player::setAngle(float a)
 {
     angle = a;
+}
+
+const std::string& Player::getNickname() const
+{
+    return nickname;
+}
+
+void Player::setNickname(const std::string& nick)
+{
+    nickname = nick;
 }
 
 void Player::addMass(float m)

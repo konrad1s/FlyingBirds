@@ -169,7 +169,7 @@ InGameHUD::PlayerInfo InGameHUD::createPlayerInfo(const Player *playerPtr, std::
     if (font)
     {
         info.nicknameText.setFont(*font);
-        info.nicknameText.setString("Konrad");
+        info.nicknameText.setString(playerPtr->getNickname());
         info.nicknameText.setCharacterSize(28);
         info.nicknameText.setFillColor(sf::Color::Black);
         info.nicknameText.setPosition(START_X, 70.f + VERTICAL_SPACING * static_cast<float>(index));
@@ -220,8 +220,6 @@ InGameHUD::PlayerInfo InGameHUD::createPlayerInfo(const Player *playerPtr, std::
 
 void InGameHUD::updatePlayerInfo(PlayerInfo &info, const Player *playerPtr, std::size_t index)
 {
-    info.nicknameText.setString("Konrad");
-
     info.scoreText.setString("Score: " + std::to_string(static_cast<int>(playerPtr->getMass())));
 
     if (auto playerTexture = playerPtr->getTexture())

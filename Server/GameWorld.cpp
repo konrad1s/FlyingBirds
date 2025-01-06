@@ -18,21 +18,42 @@ GameWorld::GameWorld()
     systems.push_back(std::make_unique<EntitySpawnSystem>());
 }
 
-void GameWorld::addPlayer(uint32_t id)
+void GameWorld::addPlayer(uint32_t id, const std::string &nickname)
 {
+    std::string uniqueNickname = nickname.substr(0, 15);
+    int postfix = 1;
+
+    auto nicknameExists = [&](const std::string &name) -> bool
+    {
+        for (const auto &pair : players)
+        {
+            if (pair.second->getNickname() == name)
+                return true;
+        }
+        return false;
+    };
+
+    while (nicknameExists(uniqueNickname))
+    {
+        std::string newNickname = nickname + "_" + std::to_string(postfix);
+        uniqueNickname = newNickname;
+
+        ++postfix;
+    }
+
     std::uniform_real_distribution<float> xPos(ConfigServer::xWorldMargin,
                                                ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
     std::uniform_real_distribution<float> yPos(ConfigServer::yWorldMargin,
                                                ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
 
-    auto player = std::make_unique<Player>(id, xPos(rng), yPos(rng), 2500.f, 100.f);
+    auto player = std::make_unique<Player>(id, xPos(rng), yPos(rng), 2500.f, 100.f, uniqueNickname);
 
     players[id] = std::move(player);
-    Logger::info("Added player {} to the game at position ({}, {}).",
-                 id,
-                 players[id]->getX(),
-                 players[id]->getY());
+
+    Logger::info("Added player {} ('{}') to the game at position ({}, {}).", 
+                 id, uniqueNickname, players[id]->getX(), players[id]->getY());
 }
+
 
 void GameWorld::removePlayer(uint32_t id)
 {

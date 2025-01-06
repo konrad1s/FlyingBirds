@@ -25,6 +25,10 @@ public:
     const std::unordered_map<uint32_t, std::unique_ptr<Entity>>& getEntities() const { return entities; }
 
 private:
+    void updateOrCreatePlayer(const network::ServerToClient::Entity &ent);
+    void updateOrCreateEntity(const network::ServerToClient::Entity &ent);
+
+private:
     uint32_t myPlayerId{0};
 
     EntityFactory factory;
