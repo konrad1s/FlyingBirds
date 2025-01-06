@@ -86,8 +86,22 @@ inline std::string Logger::getCurrentTime()
     auto now = system_clock::now();
     auto nowTime = system_clock::to_time_t(now);
 
+    std::tm tm;
+
+#ifdef _WIN32
+    if (localtime_s(&tm, &nowTime) != 0)
+    {
+        throw std::runtime_error("Failed to get local time using localtime_s.");
+    }
+#else
+    if (localtime_r(&nowTime, &tm) == nullptr)
+    {
+        throw std::runtime_error("Failed to get local time using localtime_r.");
+    }
+#endif
+
     std::ostringstream ss;
-    ss << std::put_time(std::localtime(&nowTime), "%Y-%m-%d %H:%M:%S");
+    ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
 
     return ss.str();
 }
