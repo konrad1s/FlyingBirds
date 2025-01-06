@@ -22,10 +22,11 @@ public:
     void setNickname(const std::string& nick) { nickname = nick; }
     const std::string& getNickname() const { return nickname; }
 
+    void setAssetId(uint32_t id) { assetId = id; }
+
     Components::Animation& getFlyingAnimation() { return flyingAnimation; }
     Components::Animation& getShootingAnimation() { return shootingAnimation; }
 
-    void setTexture(const std::shared_ptr<sf::Texture> &texture);
     const std::shared_ptr<sf::Texture> &getTexture() const;
 
     void setProtection(bool enabled);
@@ -38,7 +39,7 @@ public:
 private:
     Components::Animation flyingAnimation;
     Components::Animation shootingAnimation;
-    std::shared_ptr<sf::Texture> defaultTexture;
+    uint32_t assetId{0};
 
     Components::Mass mass;
     bool attacking{false};

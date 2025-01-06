@@ -30,16 +30,8 @@ public:
 
 private:
     ResourceManager() = default;
-    ~ResourceManager() = default;
 
-    struct ResourceData
-    {
-        std::shared_ptr<void> resource;
-        int refCount{0};
-    };
-
-    std::unordered_map<std::type_index, std::unordered_map<std::string, ResourceData>> resources;
-
+    std::unordered_map<std::type_index, std::unordered_map<std::string, std::shared_ptr<void>>> resources;
     std::shared_mutex resourceMutex;
 };
 

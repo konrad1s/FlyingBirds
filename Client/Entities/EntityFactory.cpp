@@ -11,6 +11,7 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
 
     player->setPosition(x, y);
     player->setMass(mass);
+    player->setAssetId(playerAssetId);
 
     auto loadTexture = [&](int playerNum, const std::string &directory, int frameCount, std::function<Components::Animation&()> getAnimation)
     {
@@ -24,11 +25,6 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
             {
                 auto texture = rm.acquire<sf::Texture>(key, path);
                 getAnimation().addFrame(texture);
-
-                if (i == 1)
-                {
-                    player->setTexture(texture);
-                }
             }
             catch (const std::exception &e)
             {

@@ -14,7 +14,6 @@ public:
     explicit InGameHUD(sf::RenderWindow &window);
     ~InGameHUD() override = default;
 
-    // From the base HUD interface
     void handleEvent(sf::RenderWindow &window, const sf::Event &event) override;
     void update(float deltaTime) override {}
     void update(GameWorld &world, float deltaTime);

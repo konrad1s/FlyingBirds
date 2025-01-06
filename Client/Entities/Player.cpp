@@ -24,7 +24,6 @@ void Player::render(sf::RenderWindow &window)
 {
     if (attacking)
     {
-        Logger::info("Attacking");
         shootingAnimation.applyToSprite(sprite.sprite);
     }
     else
@@ -71,14 +70,25 @@ void Player::setMass(float newMass)
     mass = Components::Mass(newMass);
 }
 
-void Player::setTexture(const std::shared_ptr<sf::Texture> &texture)
-{
-    defaultTexture = texture;
-}
-
 const std::shared_ptr<sf::Texture> &Player::getTexture() const
 {
-    return defaultTexture;
+    auto &rm = ResourceManager::getInstance();
+
+    std::string directory;
+
+    if (mass.getValue() > 0.0f)
+    {
+        directory = "flying";
+    }
+    else
+    {
+        directory = "gameOver";
+    }
+
+    std::string key = "p" + std::to_string(assetId) + "_" + directory + "_" + std::to_string(1);
+    std::string path = "players/player" + std::to_string(assetId + 1) + "/" + directory + "/a" + std::to_string(1) + ".png";
+    
+    return rm.acquire<sf::Texture>(key, path);
 }
 
 void Player::setProtection(bool enabled)

@@ -191,7 +191,7 @@ InGameHUD::PlayerInfo InGameHUD::createPlayerInfo(const Player *playerPtr, std::
         const float scale = desiredSize / static_cast<float>(std::max(playerTexture->getSize().x,
                                                                       playerTexture->getSize().y));
         info.playerSkinSprite.setScale(scale, scale);
-        info.playerSkinSprite.setPosition(START_X + 490.f - desiredSize - 50.f,
+        info.playerSkinSprite.setPosition(START_X + 440.f - desiredSize,
                                           80.f + VERTICAL_SPACING * static_cast<float>(index));
     }
 
@@ -231,8 +231,8 @@ void InGameHUD::updatePlayerInfo(PlayerInfo &info, const Player *playerPtr, std:
             const float scale = desiredSize / static_cast<float>(std::max(playerTexture->getSize().x,
                                                                           playerTexture->getSize().y));
             info.playerSkinSprite.setScale(scale, scale);
-            info.playerSkinSprite.setPosition(START_X + 490.f - desiredSize - 10.f,
-                                              20.f + VERTICAL_SPACING * static_cast<float>(index));
+            info.playerSkinSprite.setPosition(START_X + 440.f - desiredSize,
+                                              80.f + VERTICAL_SPACING * static_cast<float>(index));
         }
     }
 
