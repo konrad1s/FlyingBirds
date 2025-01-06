@@ -10,9 +10,8 @@ MovementSystem::MovementSystem(std::unique_ptr<Client> &client)
 {
 }
 
-void MovementSystem::update(GameWorld &game, float dt)
+void MovementSystem::update(GameWorld &game, uint32_t myId, float dt)
 {
-    uint32_t myId = game.getMyPlayerId();
     const auto &players = game.getPlayers();
 
     auto it = players.find(myId);

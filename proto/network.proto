@@ -42,7 +42,8 @@ message ServerToClient
     {
         STATE_UPDATE = 0;
         WELCOME      = 1;
-        GOODBYE      = 2;
+        GAME_START   = 2;
+        GOODBYE      = 3;
     }
     MessageType type = 1;
 

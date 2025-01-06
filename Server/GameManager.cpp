@@ -61,12 +61,20 @@ void GameManager::update(float deltaTime)
     if (state == State::waitingForClients)
     {
         checkPrompt();
+
+        if (gameWorld.getPlayers().size() >= 5)
+        {
+            state = State::starting;
+            Logger::info("Starting the game.", gameWorld.getPlayers().size());
+        }
     }
     else if (state == State::starting)
     {
         if (promptThread.joinable())
             promptThread.join();
         promptThreadRunning = false;
+
+        broadcastGameStart();
 
         state = State::running;
         Logger::info("GameManager state changed to running.");
@@ -90,10 +98,15 @@ void GameManager::checkPrompt()
         {
             std::string input = promptFuture.get();
             Logger::info("Received prompt input: {}", input);
+
             if (input == "START")
             {
                 state = State::starting;
-                Logger::info("GameManager starting.");
+                Logger::info("GameManager starting via console command.");
+            }
+            else if (!input.empty())
+            {
+                Logger::warning("Unknown command received: {}", input);
             }
 
             {
@@ -104,6 +117,10 @@ void GameManager::checkPrompt()
 
             if (!promptThreadRunning && state == State::waitingForClients)
             {
+                if (promptThread.joinable())
+                {
+                    promptThread.join();
+                }
                 promptThreadRunning = true;
                 promptThread = std::thread(&GameManager::handlePrompt, this);
             }
@@ -217,4 +234,19 @@ void GameManager::handlePrompt()
     {
         Logger::error("Error in handlePrompt: {}", e.what());
     }
+}
+
+void GameManager::broadcastGameStart()
+{
+    using namespace network;
+
+    Envelope envelope;
+    envelope.set_category(Envelope::SERVER_TO_CLIENT);
+
+    ServerToClient* s2c = envelope.mutable_s2c();
+    s2c->set_type(ServerToClient::GAME_START);
+
+    server->broadcast(envelope);
+
+    Logger::info("Broadcasted GAME_START message to all clients.");
 }

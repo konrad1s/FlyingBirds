@@ -16,9 +16,6 @@ public:
     void update(float dt);
     void render(sf::RenderWindow &window);
 
-    void setMyPlayerId(uint32_t id) { myPlayerId = id; }
-    uint32_t getMyPlayerId() const { return myPlayerId; }
-
     void updateFromServer(const network::ServerToClient &message);
 
     const std::unordered_map<uint32_t, std::unique_ptr<Player>>& getPlayers()  const { return players; }
@@ -29,8 +26,6 @@ private:
     void updateOrCreateEntity(const network::ServerToClient::Entity &ent);
 
 private:
-    uint32_t myPlayerId{0};
-
     EntityFactory factory;
 
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;

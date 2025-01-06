@@ -11,7 +11,11 @@ GameManager::GameManager()
         {
             this->onServerWelcome(evt);
         });
-
+    eventBus.subscribe<Events::GameStartEvent>(
+        [this](const Events::GameStartEvent &evt)
+        {
+            this->onGameStarted();
+        });
     eventBus.subscribe<Events::StateUpdateEvent>(
         [this](const Events::StateUpdateEvent &evt)
         {
@@ -143,7 +147,7 @@ void GameManager::updateLoop()
             if (world)
             {
                 world->update(deltaTime);
-                movementSystem.update(*world, deltaTime);
+                movementSystem.update(*world, myPlayerId, deltaTime);
                 hudManager.update(*world, deltaTime);
             }
             else
@@ -160,18 +164,22 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 {
     if (!evt.message.entities().empty())
     {
-        hudManager.setState(HUDManager::State::InGame);
-        world = std::make_unique<GameWorld>();
-
         auto &player = evt.message.entities().Get(0);
 
-        world->setMyPlayerId(player.id());
+        myPlayerId = player.id();
         Logger::info("Server welcome received, player id {}", player.id());
     }
     else
     {
         Logger::warning("Server welcome received, but players list is empty.");
     }
+}
+
+void GameManager::onGameStarted()
+{
+    hudManager.setState(HUDManager::State::InGame);
+    world = std::make_unique<GameWorld>();
+    Logger::info("Game started received");
 }
 
 void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)

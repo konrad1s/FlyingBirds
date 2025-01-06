@@ -14,6 +14,10 @@ namespace Events
         network::ServerToClient message;
     };
 
+    struct GameStartEvent
+    {
+    };
+
     struct GoodbyeEvent
     {
         network::ServerToClient message;

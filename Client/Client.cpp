@@ -68,6 +68,12 @@ void Client::networkLoop()
                     eventBus.publish<Events::WelcomeEvent>(event);
                 }
                 break;
+                case network::ServerToClient::GAME_START:
+                {
+                    Events::GameStartEvent event{};
+                    eventBus.publish<Events::GameStartEvent>(event);
+                }
+                break;
                 case network::ServerToClient::GOODBYE:
                 {
                     Events::GoodbyeEvent event{envelope.s2c()};

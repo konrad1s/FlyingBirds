@@ -7,7 +7,7 @@ class MovementSystem
 public:
     MovementSystem(std::unique_ptr<Client> &client);
 
-    void update(GameWorld &game, float dt);
+    void update(GameWorld &game, uint32_t myId, float dt);
 
 private:
     float computeAngleToTarget(float x1, float y1, float x2, float y2);

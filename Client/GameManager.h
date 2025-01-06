@@ -24,11 +24,14 @@ private:
     void handleEvents();
 
     void onServerWelcome(const Events::WelcomeEvent &evt);
+    void onGameStarted();
     void onServerDataUpdate(const Events::StateUpdateEvent &evt);
     void onPlayButtonClicked(const std::string &ip, unsigned short port, const std::string &nick);
 
 private:
     bool isRunning{false};
+    uint32_t myPlayerId{0};
+
     EventBus eventBus;
     sf::RenderWindow window;
     std::thread renderThread;

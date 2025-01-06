@@ -41,6 +41,9 @@ private:
     void broadcastGameState();
 
 private:
+    void broadcastGameStart();
+
+private:
     State state = State::waitingForClients;
 
     std::promise<std::string> promptInput;
