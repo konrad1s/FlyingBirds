@@ -2,6 +2,7 @@
 
 #include "EntityFactory.h"
 #include "ResourceManager.h"
+#include <functional>
 
 std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass)
 {
@@ -11,7 +12,7 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
     player->setPosition(x, y);
     player->setMass(mass);
 
-    auto loadTexture = [&](int playerNum, const std::string &directory, int frameCount)
+    auto loadTexture = [&](int playerNum, const std::string &directory, int frameCount, std::function<Components::Animation&()> getAnimation)
     {
         /* keys like: "p1_flying_1" */
         for (int i = 1; i <= frameCount; i++)
@@ -22,7 +23,7 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
             try
             {
                 auto texture = rm.acquire<sf::Texture>(key, path);
-                player->getAnimation().addFrame(texture);
+                getAnimation().addFrame(texture);
 
                 if (i == 1)
                 {
@@ -36,7 +37,12 @@ std::unique_ptr<Player> EntityFactory::createPlayer(float x, float y, float mass
         }
     };
 
-    loadTexture(playerAssetId, "flying", 8);
+    loadTexture(playerAssetId, "shooting", 3, [&]() -> Components::Animation &
+                { return player->getShootingAnimation(); });
+
+    loadTexture(playerAssetId, "flying", 8, [&]() -> Components::Animation &
+                { return player->getFlyingAnimation(); });
+
     playerAssetId = (playerAssetId + 1) % 5;
 
     return player;

@@ -31,6 +31,9 @@ public:
     void applySpeedBoost(float multiplier, float duration);
     void applyProtection(float duration);
 
+    bool isAttacking() const { return attackState; }
+    void setAttacking(bool attacking) { attackState = attacking; }
+
 private:
     void updateSpeedBoosts(float deltaTime);
     void updateProtections(float deltaTime);
@@ -39,6 +42,7 @@ private:
     float angle;
     std::string nickname;
     Components::Speed speed;
+    bool attackState{false};
 
     struct ActiveSpeedBoost
     {

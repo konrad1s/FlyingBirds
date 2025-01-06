@@ -83,6 +83,8 @@ void GameWorld::updateOrCreatePlayer(const network::ServerToClient::Entity &ent)
             newPlayer->setSpeedBoost(ent.speedboostactive());
         if (ent.has_protectionactive())
             newPlayer->setProtection(ent.protectionactive());
+        if (ent.has_attacking()) 
+            newPlayer->setAttacking(ent.attacking());
 
         newPlayer->setNickname(ent.nickname());
 
@@ -98,6 +100,8 @@ void GameWorld::updateOrCreatePlayer(const network::ServerToClient::Entity &ent)
             it->second->setSpeedBoost(ent.speedboostactive());
         if (ent.has_protectionactive())
             it->second->setProtection(ent.protectionactive());
+        if (ent.has_attacking())
+            it->second->setAttacking(ent.attacking());
 
         it->second->setNickname(ent.nickname());
     }

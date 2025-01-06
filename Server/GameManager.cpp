@@ -187,6 +187,7 @@ void GameManager::broadcastGameState()
         netEnt->set_speedboostactive(playerPtr->isSpeedBoostActive());
         netEnt->set_protectionactive(playerPtr->isShieldActive());
         netEnt->set_mass(playerPtr->getMass());
+        netEnt->set_attacking(playerPtr->isAttacking());
 
         netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
         netEnt->set_nickname(playerPtr->getNickname());

@@ -22,7 +22,9 @@ public:
     void setNickname(const std::string& nick) { nickname = nick; }
     const std::string& getNickname() const { return nickname; }
 
-    Components::Animation &getAnimation();
+    Components::Animation& getFlyingAnimation() { return flyingAnimation; }
+    Components::Animation& getShootingAnimation() { return shootingAnimation; }
+
     void setTexture(const std::shared_ptr<sf::Texture> &texture);
     const std::shared_ptr<sf::Texture> &getTexture() const;
 
@@ -30,12 +32,16 @@ public:
     bool isProtectionActive() const { return protectionEnabled; }
     void setSpeedBoost(bool enabled);
     bool isSpeedBoostActive() const { return speedBoostEnabled; }
+    void setAttacking(bool attack) { attacking = attack; }
+    bool isAttacking() const { return attacking; }
 
 private:
-    Components::Mass mass;
-    Components::Animation animation;
+    Components::Animation flyingAnimation;
+    Components::Animation shootingAnimation;
     std::shared_ptr<sf::Texture> defaultTexture;
 
+    Components::Mass mass;
+    bool attacking{false};
     bool protectionEnabled{false};
     bool speedBoostEnabled{false};
     float speed{100.f};

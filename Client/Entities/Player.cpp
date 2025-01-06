@@ -10,12 +10,27 @@ Player::Player()
 
 void Player::update(float deltaTime)
 {
-    animation.update(deltaTime);
+    if (attacking)
+    {
+        shootingAnimation.update(deltaTime);
+    }
+    else
+    {
+        flyingAnimation.update(deltaTime);
+    }
 }
 
 void Player::render(sf::RenderWindow &window)
 {
-    animation.applyToSprite(sprite.sprite);
+    if (attacking)
+    {
+        Logger::info("Attacking");
+        shootingAnimation.applyToSprite(sprite.sprite);
+    }
+    else
+    {
+        flyingAnimation.applyToSprite(sprite.sprite);
+    }
 
     float radius = mass.getRadius();
     float diameter = 2.f * radius;
@@ -54,11 +69,6 @@ float Player::getMass() const
 void Player::setMass(float newMass)
 {
     mass = Components::Mass(newMass);
-}
-
-Components::Animation &Player::getAnimation()
-{
-    return animation;
 }
 
 void Player::setTexture(const std::shared_ptr<sf::Texture> &texture)

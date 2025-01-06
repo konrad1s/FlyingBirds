@@ -66,6 +66,7 @@ message ServerToClient
         optional string nickname = 5;  
         optional bool speedBoostActive = 6;
         optional bool protectionActive = 7;
+        optional bool attacking = 8;
     }
 
     repeated Entity entities = 2;

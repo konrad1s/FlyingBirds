@@ -20,6 +20,8 @@ namespace ConfigServer
     constexpr float yWorldSize = 720.0f;
     constexpr float yWorldMargin = 20.0f;
 
+    constexpr float playerCollisionAttackFactor = 0.001f;
+
     const std::vector<EntitySpawnConfig> entitySpawnConfigs =
     {
         {EntityType::Food,       5.f,  10},
