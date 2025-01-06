@@ -168,10 +168,14 @@ void GameManager::onServerWelcome(const Events::WelcomeEvent &evt)
 
         myPlayerId = player.id();
         Logger::info("Server welcome received, player id {}", player.id());
+
+        hudManager.setMenuStatus(MenuHUD::Status::Connected_Waiting);
     }
     else
     {
         Logger::warning("Server welcome received, but players list is empty.");
+
+        hudManager.setMenuStatus(MenuHUD::Status::Error);
     }
 }
 
@@ -197,6 +201,8 @@ void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port
 {
     if (!ip.empty() && port != 0)
     {
+        hudManager.setMenuStatus(MenuHUD::Status::Connecting);
+
         client = std::make_unique<Client>(sf::IpAddress(ip), port, eventBus);
         if (0 == client->start())
         {
@@ -205,9 +211,16 @@ void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port
             joinMsg.set_nickname(nick);
             client->sendToServer(joinMsg);
         }
+        else
+        {
+            client.reset();
+            Logger::error("Failed to start client.");
+            hudManager.setMenuStatus(MenuHUD::Status::InvalidIPPort);
+        }
     }
     else
     {
+        hudManager.setMenuStatus(MenuHUD::Status::InvalidIPPort);
         Logger::warning("Invalid IP or Port entered.");
     }
 }

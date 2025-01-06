@@ -8,11 +8,22 @@
 class MenuHUD : public HUDBase
 {
 public:
+    enum class Status
+    {
+        Disconnected,
+        Connected_Waiting,
+        InvalidIPPort,
+        Connecting,
+        Error
+    };
+
     MenuHUD(sf::RenderWindow &window, EventBus &eventBus);
     ~MenuHUD() override = default;
     void handleEvent(sf::RenderWindow &window, const sf::Event &event) override;
     void update(float deltaTime) override;
     void render(sf::RenderWindow &window) override;
+
+    void setStatus(Status status, sf::RenderWindow &window);
 
 private:
     void initializeHud(sf::RenderWindow &window);
@@ -25,6 +36,10 @@ private:
     std::string getIP() const;
     unsigned short getPort() const;
     std::string getNickname() const;
+
+    std::string getStatusString() const;
+
+    Status currentStatus = Status::Disconnected;
 
     enum class FocusedInput
     {
@@ -41,10 +56,13 @@ private:
 
     std::shared_ptr<sf::Font> font;
     std::shared_ptr<sf::Texture> connectTexture;
+    std::shared_ptr<sf::Texture> playInactiveTexture;
 
     sf::Text ipLabel;
     sf::Text portLabel;
     sf::Text nicknameLabel;
+    sf::Text statusText;
+
     sf::Sprite connectButton;
     sf::RectangleShape ipInputBox;
     sf::RectangleShape portInputBox;

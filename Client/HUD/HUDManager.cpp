@@ -70,3 +70,14 @@ void HUDManager::createInGameHUD()
 {
     hud = std::make_unique<InGameHUD>(window);
 }
+
+void HUDManager::setMenuStatus(MenuHUD::Status status)
+{
+    if (currentState == State::Menu)
+    {
+        if (auto menuHud = dynamic_cast<MenuHUD*>(hud.get()))
+        {
+            menuHud->setStatus(status, window);
+        }
+    }
+}

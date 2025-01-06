@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "HUDBase.h"
 #include "EventBus.h"
+#include "MenuHUD.h"
 
 class GameWorld;
 
@@ -24,6 +25,8 @@ public:
     void update(float deltaTime);
     void update(GameWorld &world, float deltaTime);
     void render();
+
+    void setMenuStatus(MenuHUD::Status status);
 
 private:
     void createMenuHUD();

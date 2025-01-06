@@ -35,6 +35,16 @@ void MenuHUD::initializeHud(sf::RenderWindow &window)
         throw;
     }
 
+    try
+    {
+        playInactiveTexture = rm.acquire<sf::Texture>("playInactiveButton", "hud/playInactive.png");
+    }
+    catch (...)
+    {
+        Logger::error("Failed to load texture: assets/hud/playInactive.png");
+        throw;
+    }
+
     /* Calculate window center */
     sf::Vector2u windowSize = window.getSize();
     float centerX = windowSize.x / 2.f;
@@ -112,27 +122,41 @@ void MenuHUD::initializeHud(sf::RenderWindow &window)
     nicknameInputBox.move(centerX, 0.f);
     connectButton.move(centerX, 0.f);
 
+    /* Setup Status Text */
+    statusText.setFont(*font);
+    statusText.setCharacterSize(36);
+    statusText.setFillColor(sf::Color::White);
+    statusText.setOutlineColor(sf::Color::Black);
+    statusText.setOutlineThickness(1.5f);
+    statusText.setString("STATUS: " + getStatusString());
+    sf::FloatRect statusBounds = statusText.getLocalBounds();
+    statusText.setOrigin(statusBounds.width / 2.f, statusBounds.height / 2.f);
+    statusText.setPosition(centerX, windowSize.y - statusBounds.height - 25.f);
+
     updateInputBoxOutlines();
 }
 
 void MenuHUD::handleEvent(sf::RenderWindow &window, const sf::Event &event)
 {
-    switch (event.type)
+    if ((currentStatus != Status::Connecting) && (currentStatus != Status::Connected_Waiting))
     {
-    case sf::Event::TextEntered:
-        handleTextEntered(event);
-        break;
+        switch (event.type)
+        {
+        case sf::Event::TextEntered:
+            handleTextEntered(event);
+            break;
 
-    case sf::Event::MouseButtonPressed:
-        handleMousePressed(window, event.mouseButton);
-        break;
+        case sf::Event::MouseButtonPressed:
+            handleMousePressed(window, event.mouseButton);
+            break;
 
-    case sf::Event::KeyPressed:
-        handleKeyPressed(event.key);
-        break;
+        case sf::Event::KeyPressed:
+            handleKeyPressed(event.key);
+            break;
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
 }
 
@@ -296,6 +320,8 @@ void MenuHUD::render(sf::RenderWindow &window)
     drawText(ipInput, ipInputBox);
     drawText(portInput, portInputBox);
     drawText(nicknameInput, nicknameInputBox);
+
+    window.draw(statusText);
 }
 
 std::string MenuHUD::getIP() const
@@ -318,4 +344,62 @@ unsigned short MenuHUD::getPort() const
 std::string MenuHUD::getNickname() const
 {
     return nicknameInput;
+}
+
+void MenuHUD::setStatus(Status status, sf::RenderWindow &window)
+{
+    currentStatus = status;
+    statusText.setString("STATUS: " + getStatusString());
+
+    switch (currentStatus)
+    {
+    case Status::Connected_Waiting:
+        statusText.setFillColor(sf::Color::Green);
+        break;
+    case Status::InvalidIPPort:
+    case Status::Error:
+        statusText.setFillColor(sf::Color::Red);
+        break;
+    case Status::Connecting:
+        statusText.setFillColor(sf::Color::Yellow);
+        break;
+    case Status::Disconnected:
+    default:
+        statusText.setFillColor(sf::Color::White);
+        break;
+    }
+
+    sf::FloatRect statusBounds = statusText.getLocalBounds();
+    statusText.setOrigin(statusBounds.width / 2.f, statusBounds.height / 2.f);
+
+    sf::Vector2u windowSize = window.getSize();
+    statusText.setPosition(windowSize.x / 2.f, windowSize.y - statusBounds.height - 25.f);
+
+    if (status == Status::Connected_Waiting)
+    {
+        connectButton.setTexture(*playInactiveTexture);
+    }
+    else
+    {
+        connectButton.setTexture(*connectTexture);
+    }
+}
+
+std::string MenuHUD::getStatusString() const
+{
+    switch (currentStatus)
+    {
+    case Status::Disconnected:
+        return "Disconnected";
+    case Status::Connecting:
+        return "Connecting...";
+    case Status::Connected_Waiting:
+        return "Connected - waiting for the game to be started";
+    case Status::InvalidIPPort:
+        return "Invalid IP or Port";
+    case Status::Error:
+        return "Error occurred";
+    default:
+        return "Unknown Status";
+    }
 }
