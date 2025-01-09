@@ -9,11 +9,12 @@
 #include "Food.h"
 #include "SpeedBoost.h"
 #include "ISystem.h"
+#include "EventBus.h"
 
 class GameWorld
 {
 public:
-    GameWorld();
+    GameWorld(EventBus &eventBus);
 
     void addPlayer(uint32_t id, const std::string &nickname);
     void removePlayer(uint32_t playerId);

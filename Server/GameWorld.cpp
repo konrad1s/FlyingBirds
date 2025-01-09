@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <memory>
 
-GameWorld::GameWorld()
+GameWorld::GameWorld(EventBus &eventBus)
 {
     rng.seed(static_cast<unsigned>(std::chrono::system_clock::now().time_since_epoch().count()));
 
     systems.push_back(std::make_unique<MovementSystem>());
-    systems.push_back(std::make_unique<CollisionSystem>());
+    systems.push_back(std::make_unique<CollisionSystem>(eventBus));
     systems.push_back(std::make_unique<EntitySpawnSystem>());
 }
 

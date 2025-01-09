@@ -51,7 +51,10 @@ void Player::render(sf::RenderWindow &window)
     {
         sf::Sprite glowSprite = sprite.sprite;
         glowSprite.setColor(sf::Color(255, 255, 0));
-        glowSprite.setScale(glowSprite.getScale() * 1.3f);
+        sf::Vector2f scale = glowSprite.getScale();
+        scale.x = scale.x < 0 ? scale.x - 0.05f : scale.x + 0.05f;
+        scale.y = scale.y < 0 ? scale.y - 0.05f : scale.y + 0.05f;
+        glowSprite.setScale(scale);
         window.draw(glowSprite, sf::BlendAdd);
     }
 

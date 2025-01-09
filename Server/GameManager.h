@@ -11,6 +11,7 @@
 #include "EventBus.h"
 #include "network.pb.h"
 #include "GameWorld.h"
+#include "ScoreboardManager.h"
 
 class GameManager
 {
@@ -39,9 +40,9 @@ private:
     void onClientMessage(uint32_t clientId, const network::ClientToServer &msg);
     void sendWelcomeToClient(uint32_t clientId);
     void broadcastGameState();
-
-private:
+    void broadcastScoreboard();
     void broadcastGameStart();
+    void handleEndGame(float deltaTime);
 
 private:
     State state = State::waitingForClients;
@@ -53,7 +54,11 @@ private:
 
     std::mutex promptMutex;
     EventBus eventBus;
+    ScoreboardManager scoreboardManager;
     std::unique_ptr<Server> server;
+
+    float timeRemaining;
+    bool isGameOver;
 
     GameWorld gameWorld;
 };

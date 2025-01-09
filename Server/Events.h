@@ -23,4 +23,9 @@ namespace Events
         uint32_t clientId;
         network::ClientToServer message;
     };
+
+    struct PlayerDiedEvent
+    {
+        uint32_t playerId;
+    };
 }

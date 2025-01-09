@@ -4,7 +4,7 @@
 #include "Events.h"
 
 GameManager::GameManager()
-    : state(State::waitingForClients)
+    : state(State::waitingForClients), scoreboardManager(eventBus), gameWorld(eventBus)
 {
     promptFuture = promptInput.get_future();
     server = std::make_unique<Server>(eventBus);
@@ -65,7 +65,7 @@ void GameManager::update(float deltaTime)
         if (gameWorld.getPlayers().size() >= 5)
         {
             state = State::starting;
-            Logger::info("Starting the game.", gameWorld.getPlayers().size());
+            Logger::info("Starting the game with {} players.", gameWorld.getPlayers().size());
         }
     }
     else if (state == State::starting)
@@ -74,19 +74,28 @@ void GameManager::update(float deltaTime)
             promptThread.join();
         promptThreadRunning = false;
 
-        broadcastGameStart();
+        timeRemaining = 60.f;
+        isGameOver = false;
+        scoreboardManager.reset();
 
+        broadcastGameStart();
         state = State::running;
         Logger::info("GameManager state changed to running.");
     }
     else if (state == State::running)
     {
+        timeRemaining -= deltaTime;
         gameWorld.update(deltaTime);
         broadcastGameState();
+        handleEndGame(deltaTime);
     }
     else if (state == State::finished)
     {
-        /* TODO: Handle finished state */
+        isGameOver = true;
+        broadcastScoreboard();
+        promptThreadRunning = true;
+        promptThread = std::thread(&GameManager::handlePrompt, this);
+        state = State::waitingForClients;
     }
 }
 
@@ -250,4 +259,86 @@ void GameManager::broadcastGameStart()
     server->broadcast(envelope);
 
     Logger::info("Broadcasted GAME_START message to all clients.");
+}
+
+void GameManager::broadcastScoreboard()
+{
+    using namespace network;
+
+    std::vector<Player*> livingPlayers;
+    livingPlayers.reserve(gameWorld.getPlayers().size());
+
+    for (auto &kv : gameWorld.getPlayers())
+    {
+        Player* p = kv.second.get();
+        if (p && p->getMass() > 0.f)
+        {
+            livingPlayers.push_back(p);
+        }
+    }
+
+    std::sort(livingPlayers.begin(), livingPlayers.end(), 
+              [](Player* a, Player* b)
+              {
+                  return a->getMass() > b->getMass();
+              });
+
+    const auto &deadPlayersOrder = scoreboardManager.getDeadPlayersOrder();
+
+    Envelope envelope;
+    envelope.set_category(Envelope::SERVER_TO_CLIENT);
+
+    auto s2c = envelope.mutable_s2c();
+    s2c->set_type(ServerToClient::GOODBYE); 
+
+    for (size_t i = 0; i < livingPlayers.size(); ++i)
+    {
+        ServerToClient::Entity* netEnt = s2c->add_entities();
+        netEnt->set_id(livingPlayers[i]->getId());
+        netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
+        netEnt->set_mass(livingPlayers[i]->getMass());
+
+        Logger::info("  Rank {}: ID={}", i + 1, livingPlayers[i]->getId());
+    }
+
+    for (size_t i = deadPlayersOrder.size(); i > 0; i--)
+    {
+        uint32_t deadId = deadPlayersOrder[i];
+        Player* deadPlayer = gameWorld.findPlayerById(deadId);
+
+        ServerToClient::Entity* netEnt = s2c->add_entities();
+        netEnt->set_id(deadId);
+        netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
+        netEnt->set_mass(0.f);
+
+        Logger::info("  Death Order: ID={}", i + 1, deadId);
+    }
+
+    server->broadcast(envelope);
+    Logger::info("Broadcasted final scoreboard.");
+}
+
+void GameManager::handleEndGame(float deltaTime)
+{
+    if (timeRemaining <= 0.0f && !isGameOver)
+    {
+        Logger::info("Time is up! Game over.");
+        state = State::finished;
+        return;
+    }
+
+    int aliveCount = 0;
+    for (auto &kv : gameWorld.getPlayers())
+    {
+        Player *p = kv.second.get();
+        if (p && p->getMass() > 0.f)
+            aliveCount++;
+    }
+
+    if (aliveCount <= 1 && !isGameOver)
+    {
+        Logger::info("Only {} player(s) remain(s). Game over!", aliveCount);
+        state = State::finished;
+        return;
+    }
 }

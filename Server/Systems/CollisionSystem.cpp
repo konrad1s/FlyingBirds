@@ -6,6 +6,7 @@
 #include "Protection.h"
 #include "Logger.h"
 #include "ConfigServer.h"
+#include "Events.h"
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -125,6 +126,8 @@ void CollisionSystem::update(GameWorld &world, float deltaTime)
                 if (smaller->getMass() <= 0.f)
                 {
                     smaller->setMass(0.f);
+                    Events::PlayerDiedEvent event{ smaller->getId() };
+                    eventBus.publish<Events::PlayerDiedEvent>(event);
                     Logger::info("Player {} dead.", smaller->getId());
                 }
             }
