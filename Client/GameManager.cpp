@@ -21,11 +21,15 @@ GameManager::GameManager()
         {
             this->onServerDataUpdate(evt);
         });
-
     eventBus.subscribe<Events::PlayButtonClickEvent>(
         [this](const Events::PlayButtonClickEvent &evt)
         {
             this->onPlayButtonClicked(evt.ip, evt.port, evt.nickname);
+        });
+    eventBus.subscribe<Events::GoodbyeEvent>(
+        [this](const Events::GoodbyeEvent &evt)
+        {
+            this->onServerGoodbye(evt);
         });
 
     try
@@ -223,4 +227,49 @@ void GameManager::onPlayButtonClicked(const std::string &ip, unsigned short port
         hudManager.setMenuStatus(MenuHUD::Status::InvalidIPPort);
         Logger::warning("Invalid IP or Port entered.");
     }
+}
+
+void GameManager::onServerGoodbye(const Events::GoodbyeEvent &evt)
+{
+    std::vector<GameEndHUD::ScoreEntry> finalScores;
+    finalScores.reserve(evt.message.entities().size());
+
+    std::lock_guard<std::mutex> lock(entityMutex);
+    for (int i = 0; i < evt.message.entities().size(); ++i)
+    {
+        const auto &netEnt = evt.message.entities().Get(i);
+
+        GameEndHUD::ScoreEntry entry;
+        entry.playerId = netEnt.id();
+        entry.mass     = netEnt.mass();
+
+        if (world)
+        {
+            const auto &players = world->getPlayers();
+            auto it = players.find(netEnt.id());
+            if (it != players.end() && it->second)
+            {
+                entry.nickname = it->second->getNickname();
+                entry.playerTexture = it->second->getTexture();
+            }
+        }
+
+        if (entry.nickname.empty())
+        {
+            entry.nickname = "Player " + std::to_string(netEnt.id());
+        }
+
+        finalScores.push_back(entry);
+    }
+
+    hudManager.setState(HUDManager::State::GameEnd);
+
+    if (auto gameEndHUD = dynamic_cast<GameEndHUD*>(hudManager.getHUD().get()))
+    {
+        gameEndHUD->setScoreboard(finalScores);
+    }
+
+    world.reset();
+
+    Logger::info("Server goodbye received, final scoreboard sent.");
 }

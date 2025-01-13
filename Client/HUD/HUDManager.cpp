@@ -21,6 +21,9 @@ void HUDManager::setState(State newState)
     case State::InGame:
         createInGameHUD();
         break;
+    case State::GameEnd:
+        createGameEndHUD(); 
+        break;
     }
 
     currentState = newState;
@@ -69,6 +72,11 @@ void HUDManager::createMenuHUD()
 void HUDManager::createInGameHUD()
 {
     hud = std::make_unique<InGameHUD>(window);
+}
+
+void HUDManager::createGameEndHUD()
+{
+    hud = std::make_unique<GameEndHUD>(window);
 }
 
 void HUDManager::setMenuStatus(MenuHUD::Status status)

@@ -27,6 +27,7 @@ private:
     void onGameStarted();
     void onServerDataUpdate(const Events::StateUpdateEvent &evt);
     void onPlayButtonClicked(const std::string &ip, unsigned short port, const std::string &nick);
+    void onServerGoodbye(const Events::GoodbyeEvent &evt);
 
 private:
     bool isRunning{false};

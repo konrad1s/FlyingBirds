@@ -2,6 +2,7 @@ add_library(ClientHUDs
     MenuHUD.cpp
     InGameHUD.cpp
     HUDManager.cpp
+    GameEndHUD.cpp
 )
 
 target_include_directories(ClientHUDs PUBLIC

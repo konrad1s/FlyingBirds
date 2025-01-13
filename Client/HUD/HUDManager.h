@@ -5,6 +5,7 @@
 #include "HUDBase.h"
 #include "EventBus.h"
 #include "MenuHUD.h"
+#include "GameEndHUD.h"
 
 class GameWorld;
 
@@ -14,13 +15,15 @@ public:
     enum class State
     {
         Menu,
-        InGame
+        InGame,
+        GameEnd
     };
 
     HUDManager(sf::RenderWindow &window, EventBus &eventBus);
 
     ~HUDManager() = default;
     void setState(State newState);
+    std::unique_ptr<HUDBase>& getHUD() { return hud; }
     void handleEvent(const sf::Event &event);
     void update(float deltaTime);
     void update(GameWorld &world, float deltaTime);
@@ -31,6 +34,7 @@ public:
 private:
     void createMenuHUD();
     void createInGameHUD();
+    void createGameEndHUD();
 
 private:
     sf::RenderWindow &window;

@@ -301,17 +301,31 @@ void GameManager::broadcastScoreboard()
         Logger::info("  Rank {}: ID={}", i + 1, livingPlayers[i]->getId());
     }
 
-    for (size_t i = deadPlayersOrder.size(); i > 0; i--)
+    if (!deadPlayersOrder.empty())
     {
-        uint32_t deadId = deadPlayersOrder[i];
-        Player* deadPlayer = gameWorld.findPlayerById(deadId);
+        for (size_t i = deadPlayersOrder.size(); i-- > 0; )
+        {
+            uint32_t deadId = deadPlayersOrder[i];
+            Player* deadPlayer = gameWorld.findPlayerById(deadId);
 
-        ServerToClient::Entity* netEnt = s2c->add_entities();
-        netEnt->set_id(deadId);
-        netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
-        netEnt->set_mass(0.f);
+            if (deadPlayer)
+            {
+                ServerToClient::Entity* netEnt = s2c->add_entities();
+                netEnt->set_id(deadId);
+                netEnt->set_entitytype(ServerToClient::Entity::PLAYER);
+                netEnt->set_mass(0.f);
 
-        Logger::info("  Death Order: ID={}", i + 1, deadId);
+                Logger::info("  Death Order {}: ID={}", deadPlayersOrder.size() - i, deadId);
+            }
+            else
+            {
+                Logger::warning("Dead player with ID={} not found in gameWorld.", deadId);
+            }
+        }
+    }
+    else
+    {
+        Logger::info("No dead players to display in the scoreboard.");
     }
 
     server->broadcast(envelope);
