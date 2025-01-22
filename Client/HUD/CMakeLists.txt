@@ -11,7 +11,7 @@ target_include_directories(ClientHUDs PUBLIC
 )
 
 target_link_libraries(ClientHUDs PRIVATE
-    client ClientEntities ClientComponents
+    ClientEntities ClientComponents
     Shared
     sfml-graphics sfml-window sfml-system
 )

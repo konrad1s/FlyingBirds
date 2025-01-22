@@ -12,7 +12,7 @@ target_include_directories(ClientEntities PUBLIC
 )
 
 target_link_libraries(ClientEntities PRIVATE
-    client ClientComponents
+    ClientComponents
     Shared
     sfml-graphics sfml-window sfml-system
 )

@@ -140,7 +140,7 @@ void GameManager::updateLoop()
 {
     static float deltaTime;
     sf::Clock clock;
-    MovementSystem movementSystem(client);
+    ControlSystem movementSystem("../../../Client/Systems/user_algo.lua");
 
     while (isRunning) 
     {
@@ -151,7 +151,7 @@ void GameManager::updateLoop()
             if (world)
             {
                 world->update(deltaTime);
-                movementSystem.update(*world, myPlayerId, deltaTime);
+                movementSystem.update(*client, *world, myPlayerId);
                 hudManager.update(*world, deltaTime);
             }
             else
