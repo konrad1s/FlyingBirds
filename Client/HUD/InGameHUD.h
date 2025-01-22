@@ -18,6 +18,7 @@ public:
     void update(float deltaTime) override {}
     void update(GameWorld &world, float deltaTime);
     void render(sf::RenderWindow &window) override;
+    void setTimeRemaining(float time);
 
 private:
     struct PlayerInfo
@@ -48,6 +49,9 @@ private:
 
     sf::Text titleText;
     sf::Sprite separatorSprite;
+
+    float timeRemaining = 0.0f;
+    sf::Text timeText;
 
     std::unordered_map<uint32_t, PlayerInfo> playerInfos;
 };

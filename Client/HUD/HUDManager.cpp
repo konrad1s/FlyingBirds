@@ -89,3 +89,11 @@ void HUDManager::setMenuStatus(MenuHUD::Status status)
         }
     }
 }
+
+void HUDManager::setTimeRemaining(float time)
+{
+    if (auto inGameHUD = dynamic_cast<InGameHUD*>(hud.get()))
+    {
+        inGameHUD->setTimeRemaining(time);
+    }
+}

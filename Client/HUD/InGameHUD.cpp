@@ -91,6 +91,11 @@ void InGameHUD::setupTitleText()
     titleText.setCharacterSize(42);
     titleText.setFillColor(sf::Color::Black);
     titleText.setPosition(START_X, 10.f);
+
+    timeText.setFont(*font);
+    timeText.setCharacterSize(36);
+    timeText.setFillColor(sf::Color::Red);
+    timeText.setPosition(START_X + 200.0, 15.f);
 }
 
 void InGameHUD::handleEvent(sf::RenderWindow &, const sf::Event &)
@@ -124,6 +129,10 @@ void InGameHUD::render(sf::RenderWindow &window)
 {
     window.draw(separatorSprite);
     window.draw(titleText);
+
+    int timeInt = static_cast<int>(std::ceil(timeRemaining));
+    timeText.setString("Remaining time: " + std::to_string(timeInt));
+    window.draw(timeText);
 
     for (auto &kv : playerInfos)
     {
@@ -259,4 +268,9 @@ void InGameHUD::updatePlayerInfo(PlayerInfo &info, const Player *playerPtr, std:
             info.speedBoostIcon.setPosition(-100.f, -100.f);
         }
     }
+}
+
+void InGameHUD::setTimeRemaining(float time)
+{
+    timeRemaining = time;
 }

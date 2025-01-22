@@ -198,6 +198,9 @@ void GameManager::onServerDataUpdate(const Events::StateUpdateEvent &evt)
         {
             world->updateFromServer(evt.message);
         }
+
+        float serverTimeRemaining = evt.message.time_remaining();
+        hudManager.setTimeRemaining(serverTimeRemaining);
     }
 }
 

@@ -185,6 +185,7 @@ void GameManager::broadcastGameState()
     envelope.set_category(Envelope::SERVER_TO_CLIENT);
     auto s2c = envelope.mutable_s2c();
     s2c->set_type(ServerToClient::STATE_UPDATE);
+    s2c->set_time_remaining(timeRemaining);
 
     for (auto& [id, playerPtr] : gameWorld.getPlayers())
     {

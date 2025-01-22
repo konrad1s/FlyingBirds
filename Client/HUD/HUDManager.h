@@ -30,6 +30,7 @@ public:
     void render();
 
     void setMenuStatus(MenuHUD::Status status);
+    void setTimeRemaining(float time);
 
 private:
     void createMenuHUD();
