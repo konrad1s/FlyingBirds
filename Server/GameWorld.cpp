@@ -15,7 +15,7 @@ GameWorld::GameWorld(EventBus &eventBus)
 
     systems.push_back(std::make_unique<MovementSystem>());
     systems.push_back(std::make_unique<CollisionSystem>(eventBus));
-    systems.push_back(std::make_unique<EntitySpawnSystem>());
+    systems.push_back(std::make_unique<EntitySpawnSystem>(*this));
 }
 
 void GameWorld::addPlayer(uint32_t id, const std::string &nickname)
@@ -41,17 +41,64 @@ void GameWorld::addPlayer(uint32_t id, const std::string &nickname)
         ++postfix;
     }
 
-    std::uniform_real_distribution<float> xPos(ConfigServer::xWorldMargin,
-                                               ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
-    std::uniform_real_distribution<float> yPos(ConfigServer::yWorldMargin,
-                                               ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
+    std::uniform_real_distribution<float> xPosDist(ConfigServer::xWorldMargin,
+                                                   ConfigServer::xWorldSize - ConfigServer::xWorldMargin);
+    std::uniform_real_distribution<float> yPosDist(ConfigServer::yWorldMargin,
+                                                   ConfigServer::yWorldSize - ConfigServer::yWorldMargin);
 
-    auto player = std::make_unique<Player>(id, xPos(rng), yPos(rng), 2500.f, 100.f, uniqueNickname);
+    constexpr float minSpawnDistSq = 100.f * 100.f;
+    constexpr int MAX_ATTEMPTS = 100;
+
+    float spawnX = 0.0f;
+    float spawnY = 0.0f;
+    bool validPositionFound = false;
+
+    /* TODO: Naive approach - to be changed later */
+    for (int attempt = 0; attempt < MAX_ATTEMPTS; ++attempt)
+    {
+        float candidateX = xPosDist(rng);
+        float candidateY = yPosDist(rng);
+
+        bool tooClose = false;
+        for (const auto &playerPair : players)
+        {
+            const auto &existingPlayer = playerPair.second;
+            float distSq = distanceSquared(candidateX, candidateY,
+                                           existingPlayer->getX(), existingPlayer->getY());
+            if (distSq < minSpawnDistSq)
+            {
+                tooClose = true;
+                break;
+            }
+        }
+
+        if (!tooClose)
+        {
+            spawnX = candidateX;
+            spawnY = candidateY;
+            validPositionFound = true;
+            break;
+        }
+    }
+
+    if (!validPositionFound)
+    {
+        spawnX = xPosDist(rng);
+        spawnY = yPosDist(rng);
+        Logger::warning("Could not find a valid non-overlapping spawn location for player '{}'. Using random anyway.", uniqueNickname);
+    }
+
+    auto player = std::make_unique<Player>(id, spawnX, spawnY, 
+                                           2500.f, 
+                                           100.f, 
+                                           uniqueNickname);
 
     players[id] = std::move(player);
 
-    Logger::info("Added player {} ('{}') to the game at position ({}, {}).", 
-                 id, uniqueNickname, players[id]->getX(), players[id]->getY());
+    Logger::info("Added player {} ('{}') to the game at position ({}, {}).",
+                 id, uniqueNickname, 
+                 players[id]->getX(), 
+                 players[id]->getY());
 }
 
 
@@ -105,4 +152,11 @@ void GameWorld::update(float deltaTime)
     {
         system->update(*this, deltaTime);
     }
+}
+
+float GameWorld::distanceSquared(float x1, float y1, float x2, float y2)
+{
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    return dx * dx + dy * dy;
 }

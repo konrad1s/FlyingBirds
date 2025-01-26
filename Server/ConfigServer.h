@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 #include "EntityType.h"
 
 namespace ConfigServer
@@ -9,7 +8,8 @@ namespace ConfigServer
     struct EntitySpawnConfig
     {
         EntityType type;
-        float spawnInterval;
+        float minSpawnInterval;
+        float maxSpawnInterval;
         int minCount;
     };
 
@@ -24,8 +24,8 @@ namespace ConfigServer
 
     const std::vector<EntitySpawnConfig> entitySpawnConfigs =
     {
-        {EntityType::Food,       5.f,  10},
-        {EntityType::SpeedBoost, 10.f, 3},
-        {EntityType::Protection, 15.f, 2}
+        {EntityType::Food,       3.f,  5.f, 10},
+        {EntityType::SpeedBoost, 8.f, 10.f,  3},
+        {EntityType::Protection,12.f, 15.f,  2}
     };
 }

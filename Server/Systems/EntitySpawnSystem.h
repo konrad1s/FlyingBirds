@@ -1,22 +1,38 @@
 #pragma once
 
-#include "ISystem.h"
+#include <vector>
+#include <memory>
+#include <random>
+#include "EntityType.h"
 #include "ConfigServer.h"
+#include "ISystem.h"
 
-class EntitySpawnSystem : public ISystem
+class GameWorld;
+class Entity;
+
+class EntitySpawnSystem  : public ISystem
 {
 public:
-    EntitySpawnSystem();
-    void update(GameWorld &world, float deltaTime) override;
+    EntitySpawnSystem(GameWorld& world);
+    void update(GameWorld &world, float deltaTime);
 
 private:
+    void spawnEntities(GameWorld& world, const ConfigServer::EntitySpawnConfig& cfg, int count);
+    static float getRandomSpawnInterval(const ConfigServer::EntitySpawnConfig& cfg, std::mt19937& rng);
+    static float randomFloat(float minVal, float maxVal, std::mt19937& rng);
+    void initialSpawning(GameWorld& world);
+
     struct SpawnTracker
     {
-        const ConfigServer::EntitySpawnConfig &config;
-        float elapsedTime;
+        SpawnTracker(const ConfigServer::EntitySpawnConfig& cfg)
+            : config(cfg)
+            , elapsedTime(0.0f)
+            , currentSpawnInterval(0.0f)
+        {}
 
-        SpawnTracker(const ConfigServer::EntitySpawnConfig &cfg)
-            : config(cfg), elapsedTime(0.f) {}
+        ConfigServer::EntitySpawnConfig config;
+        float elapsedTime;
+        float currentSpawnInterval;
     };
 
     std::vector<SpawnTracker> spawnTrackers;

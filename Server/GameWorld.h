@@ -32,6 +32,8 @@ public:
     std::mt19937 &getRNG() { return rng; }
 
 private:
+    float distanceSquared(float x1, float y1, float x2, float y2);
+
     std::unordered_map<uint32_t, std::unique_ptr<Player>> players;
     std::vector<std::unique_ptr<Entity>> entities;
 
