@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include "EmbeddedAssetRegistry.h"
 
 template <typename T>
 std::shared_ptr<T> ResourceManager::acquire(const std::string &key, const std::string &filename)
@@ -12,10 +13,18 @@ std::shared_ptr<T> ResourceManager::acquire(const std::string &key, const std::s
         return std::static_pointer_cast<T>(it->second);
     }
 
-    auto resource = std::make_shared<T>();
-    if (!resource->loadFromFile("../../../assets/" + filename))
+    auto assetOpt = EmbeddedAssetRegistry::instance().getAsset(filename);
+    if (!assetOpt)
     {
-        throw std::runtime_error("Failed to load file: " + filename);
+        throw std::runtime_error("Embedded asset not found: " + filename);
+    }
+
+    const auto &[dataPtr, dataSize] = assetOpt->get();
+
+    auto resource = std::make_shared<T>();
+    if (!resource->loadFromMemory(dataPtr, dataSize))
+    {
+        throw std::runtime_error("Failed to load embedded asset: " + filename);
     }
 
     resourceMap[key] = resource;

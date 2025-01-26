@@ -14,7 +14,7 @@ function getAngle(myId, players, entities)
 
     -- find closest food
     for id, e in pairs(entities) do
-        if e.type == "food" then
+        if e.type == "food" or e.type == "protection" or e.type == "speedboost" then
             local dx = e.x - myX
             local dy = e.y - myY
             local dist2 = dx*dx + dy*dy

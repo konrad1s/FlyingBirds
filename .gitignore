@@ -416,3 +416,6 @@ CMakeUserPresets.json
 *.vcxproj
 *.filters
 .vscode
+
+# Resource files
+assets/*

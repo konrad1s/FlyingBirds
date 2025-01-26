@@ -26,6 +26,14 @@ target_link_libraries(client PUBLIC
     ${Protobuf_LIBRARIES}
 )
 
+target_link_libraries(client PRIVATE embedded_assets)
+
+if (MSVC)
+    target_link_options(client PRIVATE "/WHOLEARCHIVE:embedded_assets")
+else()
+    target_link_options(client PRIVATE "-Wl,--whole-archive" embedded_assets "-Wl,--no-whole-archive")
+endif()
+
 if(WIN32)
     add_custom_command(
         TARGET client
