@@ -21,18 +21,33 @@ void GameWorld::update(float dt)
 
 void GameWorld::render(sf::RenderWindow &window)
 {
-    /* Draw all players */
-    for (auto &[id, playerPtr] : players)
+    std::vector<Player*> sortedPlayers;
+    sortedPlayers.reserve(players.size());
+    for (const auto &[id, playerPtr] : players)
+    {
+        sortedPlayers.emplace_back(playerPtr.get());
+    }
+
+    /* Sort players by mass */
+    std::sort(sortedPlayers.begin(), sortedPlayers.end(),
+              [](const Player* a, const Player* b) -> bool
+              {
+                  return a->getMass() > b->getMass();
+              });
+
+    /* Draw all players in sorted order */
+    for (auto *playerPtr : sortedPlayers)
     {
         playerPtr->render(window);
     }
 
     /* Draw other entities */
-    for (auto &[id, entityPtr] : entities)
+    for (const auto &[id, entityPtr] : entities)
     {
         entityPtr->render(window);
     }
 }
+
 
 void GameWorld::updateFromServer(const network::ServerToClient &message)
 {
