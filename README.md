@@ -11,13 +11,9 @@ FlyingBirds is a client-server game that challenges user to code an **autonomous
 1. [Game Highlights](#game-highlights)  
 2. [How It Works](#how-it-works)  
 3. [Game Entities](#game-entities)  
-4. [Writing Your AI (Lua)](#writing-your-ai-lua)  
-5. [Getting Started](#getting-started)  
-   1. [Starting the Server](#starting-the-server)  
-   2. [Connecting the Client (GUI)](#connecting-the-client-gui)  
-6. [Screenshots](#screenshots)  
-7. [Contribute](#contribute)  
-8. [License](#license)
+4. [Getting Started](#getting-started)  
+   1. [Starting the Server](#1-starting-the-server)  
+   2. [Connecting the Client (GUI)](#2-connecting-the-client-gui)  
 
 ---
 
@@ -26,7 +22,7 @@ FlyingBirds is a client-server game that challenges user to code an **autonomous
 - **Control System**: Program your bird’s behavior using a Lua script.
 - **Competitive Gameplay**: Absorb smaller players, avoid larger birds, and grab power-ups to stay alive.  
 - **Power-Ups**: Power-Ups like Food, SpeedBoost, and Protection spawn around the map to help you grow stronger or survive.
-- **Easy to Learn, Fun to Master**: The simple concept (move and grow) hides a deep strategic layer via your custom code.
+- **Easy to Learn**: The simple concept (move and grow) hides a deep strategic layer via your custom code.
 
 ---
 
@@ -105,21 +101,42 @@ Try adding extra logic—like chasing smaller players or avoiding bigger ones—
 ## Game Entities
 
 ### Players (Birds)
-- **Position (x, y)**  
-- **Mass**: Your size/health—grow by eating food or smaller birds.  
-- **Speed**: Movement speed (boostable).  
-- **Protection**: Temporary shield from being devoured.  
-- **Attacking**: Indicates absorbing a smaller bird.
+
+<img src="images/Players.png" alt="Players" style="width: 300px; height: auto;" />
+
+| **Attribute**        | **Description**                                                                 |
+|----------------------|---------------------------------------------------------------------------------|
+| **Position (x, y)**  | Coordinates of the bird on the game map.                                        |
+| **Mass**             | Represents your bird's size and health. Grow by eating food or smaller birds.   |
+| **Speed**            | Movement speed, which can be boosted temporarily.                               |
+| **Protection**       | Temporary shield that prevents being eaten by larger birds.                     |
+| **Attacking**        | Indicates if the bird is currently absorbing a smaller bird.                    |
 
 ### Food
-- **Static** collectible item.  
-- **Increases mass** when eaten.
+
+<img src="images/food.png" alt="Food" style="width: 40px; height: auto;" />
+
+| **Attribute** | **Description**                                 |
+|---------------|-------------------------------------------------|
+| **Effect**    | Increases the mass of the bird that consumes it. |
+
 
 ### SpeedBoost
-- **Temporary speed multiplier** to gain an advantage in an escape or chaising.
+
+<img src="images/power-up.png" alt="SpeedBoost" style="width: 40px; height: auto;" />
+
+| **Attribute** | **Description**                                                           |
+|---------------|---------------------------------------------------------------------------|
+| **Effect**    | Provides a temporary speed multiplier, allowing your bird to move faster.|
 
 ### Protection
-- **Shield** effect preventing absorption for a limited duration.
+
+<img src="images/protection.png" alt="Protection" style="width: 40px; height: auto;" />
+
+| **Attribute** | **Description**                                                                                                  |
+|---------------|------------------------------------------------------------------------------------------------------------------|
+| **Effect**    | Grants a shield that prevents your bird from being absorbed by larger birds for a limited duration.              |
+
 
 ---
 
@@ -127,21 +144,22 @@ Try adding extra logic—like chasing smaller players or avoiding bigger ones—
 
 ### 1. Starting the Server
 
-1. Build the project (see instructions below).  
-2. From the build folder (or wherever the binary is located), run:
+1. Build the project or download the latest release.
+2. From the the directory where executable is located, run:
    ```bash
-   ./FlyingBirdsServer
+   ./server.exe
 3. The server will open a console window and begin waiting for clients to connect. You can see log messages that indicate the server status.
+4. To start the game type "START".
 
-### 1. Connecting the Client (GUI)
+### 2. Connecting the Client (GUI)
 Run the Client after building, for example:
 
-./FlyingBirdsClient
+./client.exe
 
 A window appears with the main menu. You can enter:
 
-    Server IP: e.g., 127.0.0.1 for localhost.
-    Port: Must match the server’s port (default could be 12345, for example).
+    Server IP: e.g., localhost.
+    Port: Must match the server’s port (default is 12345).
     Nickname: Any name you’d like to appear in-game.
 
 Click the Play or Connect button. If the connection is successful, you’ll be placed in the lobby state—waiting for the game to start.
