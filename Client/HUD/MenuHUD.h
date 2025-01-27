@@ -62,6 +62,7 @@ private:
     sf::Text portLabel;
     sf::Text nicknameLabel;
     sf::Text statusText;
+    sf::Text titleText;
 
     sf::Sprite connectButton;
     sf::RectangleShape ipInputBox;

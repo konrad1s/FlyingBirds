@@ -4,7 +4,7 @@
 #include "Systems.h"
 
 GameManager::GameManager()
-    : window(sf::VideoMode(1280, 720), "Game"), hudManager(window, eventBus)
+    : window(sf::VideoMode(1280, 720), "FlyingBirds"), hudManager(window, eventBus)
 {
     eventBus.subscribe<Events::WelcomeEvent>(
         [this](const Events::WelcomeEvent &evt)
@@ -50,6 +50,16 @@ GameManager::GameManager()
         float posY = (720 - textureSize.y * scale) * 0.5f;
         background.setPosition(posX, posY);
 
+        auto iconTexture = resMgr.acquire<sf::Texture>("icon", "hud/icon.png");
+        if (iconTexture)
+        {
+            sf::Image iconImage = iconTexture->copyToImage();
+            window.setIcon(iconImage.getSize().x, iconImage.getSize().y, iconImage.getPixelsPtr());
+        }
+        else
+        {
+            Logger::error("Failed to acquire icon texture.");
+        }
     }
     catch (const std::exception &e)
     {

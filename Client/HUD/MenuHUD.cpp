@@ -51,7 +51,7 @@ void MenuHUD::initializeHud(sf::RenderWindow &window)
     float centerY = windowSize.y / 2.f;
 
     /* Define vertical offset (positive moves HUD higher) */
-    float verticalOffset = 150.f;
+    float verticalOffset = 30.f;
 
     /* Setup Labels */
     auto setupLabel = [&](sf::Text &label, const std::string &text)
@@ -132,6 +132,18 @@ void MenuHUD::initializeHud(sf::RenderWindow &window)
     sf::FloatRect statusBounds = statusText.getLocalBounds();
     statusText.setOrigin(statusBounds.width / 2.f, statusBounds.height / 2.f);
     statusText.setPosition(centerX, windowSize.y - statusBounds.height - 25.f);
+
+    /* Setup Title Text */
+    titleText.setFont(*font);
+    titleText.setString("FlyingBirds");
+    titleText.setCharacterSize(80);
+    titleText.setFillColor(sf::Color::Cyan);
+    titleText.setOutlineColor(sf::Color::Black);
+    titleText.setOutlineThickness(4.f);
+
+    sf::FloatRect titleBounds = titleText.getLocalBounds();
+    titleText.setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
+    titleText.setPosition(windowSize.x / 2.f, 50.f);
 
     updateInputBoxOutlines();
 }
@@ -298,6 +310,7 @@ void MenuHUD::update(float deltaTime)
 
 void MenuHUD::render(sf::RenderWindow &window)
 {
+    window.draw(titleText);
     window.draw(ipLabel);
     window.draw(portLabel);
     window.draw(nicknameLabel);
