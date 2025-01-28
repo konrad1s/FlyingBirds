@@ -150,7 +150,7 @@ void GameManager::updateLoop()
 {
     static float deltaTime;
     sf::Clock clock;
-    ControlSystem movementSystem("../../../Client/Systems/user_algo.lua");
+    ControlSystem movementSystem("UserAlgo.lua");
 
     while (isRunning) 
     {

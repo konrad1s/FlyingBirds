@@ -13,7 +13,7 @@ namespace ConfigServer
         int minCount;
     };
 
-    constexpr int port = 5000;
+    constexpr int port = 12345;
 
     constexpr float xWorldSize = 720.0f;
     constexpr float xWorldMargin = 20.0f;
