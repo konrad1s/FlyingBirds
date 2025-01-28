@@ -144,24 +144,29 @@ Try adding extra logic—like chasing smaller players or avoiding bigger ones—
 
 ### 1. Starting the Server
 
-1. Build the project or download the latest release.
-2. From the the directory where executable is located, run:
-   ```bash
-   ./server.exe
+1. Build the project or [download the latest release](https://github.com/konrad1s/FlyingBirds/releases/latest).
+2. From the directory where the executable is located, run:
+    ```bash
+    ./server.exe
+    ```
 3. The server will open a console window and begin waiting for clients to connect. You can see log messages that indicate the server status.
-4. To start the game type "START".
+4. To start the game, type `START`.
 
-### 2. Connecting the Client (GUI)
-Run the Client after building, for example:
+### 2. Connecting the Client
 
-./client.exe
+1. **Build the project** or **download the latest release**. Unfortunately, the assets are not publicly available in the repository, so the preferred option is to download the [latest release](https://github.com/konrad1s/FlyingBirds/releases/latest) or download the [assets](https://graphicriver.net/item/game-asset-flappy-rider-sprite-sheets/8105070) mannualy.
 
-A window appears with the main menu. You can enter:
+    ```bash
+    ./client.exe
+    ```
 
-    Server IP: e.g., localhost.
-    Port: Must match the server’s port (default is 12345).
-    Nickname: Any name you’d like to appear in-game.
+2. A window will appear with the main menu. You can enter the following details:
+    - **Server IP**: e.g., `localhost`.
+    - **Port**: Must match the server’s port (default is `12345`).
+    - **Nickname**: Any name you’d like to appear in-game.
 
-Click the Play or Connect button. If the connection is successful, you’ll be placed in the lobby state—waiting for the game to start.
-Once enough players are connected (or the server admin starts the match), you’ll see your bird in the game world.
-Your AI script (the .lua file) is automatically loaded by the client and used every game “tick” to control your movement.
+3. Click the **Play** or **Connect** button. If the connection is successful, you’ll be placed in the lobby state—waiting for the game to start.
+4. Once enough players are connected (or the server admin starts the match), you’ll see your bird in the game world.
+5. Your AI script (the `.lua` file) is automatically loaded by the client and used every game tick to control your movement.
+
+---
